@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Drive')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="container" style="max-width: 700px">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <h1 class="h3 mb-3" th:text="${drive.id == null} ? 'Create drive' : 'Edit drive'">Drive</h1>
+
+    <form method="post" th:action="@{/coordinator/drives}" th:object="${drive}">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="mb-3">
+            <label class="form-label">Company</label>
+            <!-- Sent as a separate "companyId" parameter; the controller loads the Company -->
+            <select class="form-select" name="companyId" required>
+                <option value="">Choose...</option>
+                <option th:each="c : ${companies}" th:value="${c.id}" th:text="${c.name}"
+                        th:selected="${drive.company != null and drive.company.id == c.id}">Zephyr</option>
+            </select>
+            <div class="form-text">
+                Company not listed?
+                <a th:href="@{/coordinator/companies/new(from='drive')}">Add a new company</a>
+                and you will come back here with it selected.
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Role title</label>
+            <input class="form-control" th:field="*{roleTitle}" required>
+            <div class="text-danger small" th:errors="*{roleTitle}"></div>
+        </div>
+        <div class="row">
+            <div class="col mb-3">
+                <label class="form-label">Package (LPA)</label>
+                <input class="form-control" type="number" step="0.1" th:field="*{packageLpa}" required>
+                <div class="text-danger small" th:errors="*{packageLpa}"></div>
+            </div>
+            <div class="col mb-3">
+                <label class="form-label">Minimum CGPA</label>
+                <input class="form-control" type="number" step="0.01" min="0" max="10" th:field="*{minCgpa}" required>
+                <div class="text-danger small" th:errors="*{minCgpa}"></div>
+            </div>
+            <div class="col mb-3">
+                <label class="form-label">Max backlogs</label>
+                <input class="form-control" type="number" min="0" th:field="*{maxBacklogs}" required>
+                <div class="text-danger small" th:errors="*{maxBacklogs}"></div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Allowed departments</label>
+            <!-- Every ticked box sends allowedDepartments=XX; Spring joins them into "CSE,IT" -->
+            <div class="form-check form-check-inline" th:each="dep : ${departments}">
+                <input class="form-check-input" type="checkbox" name="allowedDepartments" th:id="${'dep-' + dep}"
+                       th:value="${dep}" th:checked="${drive.departmentList.contains(dep)}">
+                <label class="form-check-label" th:for="${'dep-' + dep}" th:text="${dep}">CSE</label>
+            </div>
+            <div class="text-danger small" th:errors="*{allowedDepartments}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Deadline</label>
+            <input class="form-control" type="date" th:field="*{deadline}" required>
+            <div class="text-danger small" th:errors="*{deadline}"></div>
+        </div>
+
+        <button class="btn btn-primary">Save</button>
+        <a class="btn btn-link" th:href="@{/coordinator/drives}">Cancel</a>
+    </form>
+</main>
+</body>
+</html>

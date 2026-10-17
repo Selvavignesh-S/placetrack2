@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Companies')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3">Companies</h1>
+        <a class="btn btn-primary" th:href="@{/coordinator/companies/new}">Add company</a>
+    </div>
+
+    <table class="table table-striped align-middle">
+        <thead>
+        <tr><th>Name</th><th>Sector</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${companies}">
+            <td th:text="${c.name}">Zephyr</td>
+            <td th:text="${c.sector}">Software</td>
+            <td class="text-end">
+                <a class="btn btn-sm btn-outline-secondary" th:href="@{/coordinator/companies/{id}/edit(id=${c.id})}">Edit</a>
+                <form class="d-inline" method="post" th:action="@{/coordinator/companies/{id}/delete(id=${c.id})}">
+                    <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this company?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${companies.isEmpty()}"><td colspan="3">No companies yet.</td></tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

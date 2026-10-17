@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Drives')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3">Placement drives</h1>
+        <a class="btn btn-primary" th:href="@{/coordinator/drives/new}">Create drive</a>
+    </div>
+
+    <table class="table table-striped align-middle">
+        <thead>
+        <tr>
+            <th>Company</th><th>Role</th><th>LPA</th><th>Min CGPA</th><th>Max backlogs</th>
+            <th>Departments</th><th>Deadline</th><th>Status</th><th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="d : ${drives}">
+            <td th:text="${d.company.name}">Zephyr</td>
+            <td th:text="${d.roleTitle}">SE Trainee</td>
+            <td th:text="${d.packageLpa}">4.5</td>
+            <td th:text="${d.minCgpa}">6.0</td>
+            <td th:text="${d.maxBacklogs}">2</td>
+            <td th:text="${d.allowedDepartments}">CSE,IT</td>
+            <td th:text="${d.deadline}">2026-10-27</td>
+            <td>
+                <span th:if="${d.open}" class="badge text-bg-success">Open</span>
+                <span th:unless="${d.open}" class="badge text-bg-secondary">Closed</span>
+            </td>
+            <td class="text-end text-nowrap">
+                <!-- M3: add an "Applicants" link here -->
+                <a class="btn btn-sm btn-outline-secondary" th:href="@{/coordinator/drives/{id}/edit(id=${d.id})}">Edit</a>
+                <form class="d-inline" method="post" th:action="@{/coordinator/drives/{id}/delete(id=${d.id})}">
+                    <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this drive?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${drives.isEmpty()}"><td colspan="9">No drives yet.</td></tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Company')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="container" style="max-width: 600px">
+    <h1 class="h3 mb-3" th:text="${company.id == null} ? 'Add company' : 'Edit company'">Company</h1>
+
+    <!-- th:object binds the form to the "company" model attribute; *{field} reads/writes its fields -->
+    <form method="post" th:action="@{/coordinator/companies}" th:object="${company}">
+        <input type="hidden" th:field="*{id}">
+        <!-- Present when the user came from the drive form, so saving goes back there -->
+        <input type="hidden" name="from" th:if="${from != null}" th:value="${from}">
+
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input class="form-control" th:field="*{name}" required>
+            <div class="text-danger small" th:errors="*{name}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Sector</label>
+            <input class="form-control" th:field="*{sector}">
+            <div class="text-danger small" th:errors="*{sector}"></div>
+        </div>
+
+        <button class="btn btn-primary">Save</button>
+        <a class="btn btn-link" th:href="${from != null} ? @{/coordinator/drives/new} : @{/coordinator/companies}">Cancel</a>
+    </form>
+</main>
+</body>
+</html>

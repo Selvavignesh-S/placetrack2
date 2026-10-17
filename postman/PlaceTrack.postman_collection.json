@@ -1,0 +1,217 @@
+{
+  "info": {
+    "_postman_id": "58e669c6-7bc1-4b6b-8a99-0a1efbd714ba",
+    "name": "PlaceTrack",
+    "description": "PlaceTrack API tests. Folder 00 is the eligibility microservice (M1). M3 adds the main-app /api folders.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "00 Eligibility service",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{eligUrl}}/eligibility/ping",
+              "host": [
+                "{{eligUrl}}"
+              ],
+              "path": [
+                "eligibility",
+                "ping"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Service is UP\", () => pm.expect(pm.response.json().status).to.eql(\"UP\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Check - eligible student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{eligUrl}}/eligibility/check",
+              "host": [
+                "{{eligUrl}}"
+              ],
+              "path": [
+                "eligibility",
+                "check"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cgpa\": 8.6,\n  \"backlogs\": 0,\n  \"department\": \"IT\",\n  \"minCgpa\": 7.5,\n  \"maxBacklogs\": 0,\n  \"allowedDepartments\": [\n    \"IT\",\n    \"CSE\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Eligible\", () => pm.expect(pm.response.json().eligible).to.eql(true));",
+                  "pm.test(\"No reasons\", () => pm.expect(pm.response.json().reasons).to.be.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Check - low CGPA and backlogs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{eligUrl}}/eligibility/check",
+              "host": [
+                "{{eligUrl}}"
+              ],
+              "path": [
+                "eligibility",
+                "check"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cgpa\": 7.2,\n  \"backlogs\": 1,\n  \"department\": \"IT\",\n  \"minCgpa\": 7.5,\n  \"maxBacklogs\": 0,\n  \"allowedDepartments\": [\n    \"IT\",\n    \"CSE\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Not eligible\", () => pm.expect(pm.response.json().eligible).to.eql(false));",
+                  "pm.test(\"Two reasons\", () => pm.expect(pm.response.json().reasons).to.have.lengthOf(2));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Check - wrong department",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{eligUrl}}/eligibility/check",
+              "host": [
+                "{{eligUrl}}"
+              ],
+              "path": [
+                "eligibility",
+                "check"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cgpa\": 7.9,\n  \"backlogs\": 0,\n  \"department\": \"MECH\",\n  \"minCgpa\": 7.5,\n  \"maxBacklogs\": 0,\n  \"allowedDepartments\": [\n    \"IT\",\n    \"CSE\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Department reason\", () => pm.expect(pm.response.json().reasons[0]).to.include(\"Department MECH\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Check - missing cgpa gives 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{eligUrl}}/eligibility/check",
+              "host": [
+                "{{eligUrl}}"
+              ],
+              "path": [
+                "eligibility",
+                "check"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"backlogs\": 0,\n  \"department\": \"IT\",\n  \"minCgpa\": 7.5,\n  \"maxBacklogs\": 0,\n  \"allowedDepartments\": [\n    \"IT\",\n    \"CSE\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
