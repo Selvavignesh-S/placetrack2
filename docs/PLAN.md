@@ -229,7 +229,7 @@ Missing or invalid field → `400` (Spring's default error body). `GET /eligibil
 | `GET /coordinator/companies`, `GET .../new`, `GET .../{id}/edit`, `POST /coordinator/companies`, `POST .../{id}/delete` | coordinator | M1 |
 | `GET /coordinator/drives`, `GET .../new`, `GET .../{id}/edit`, `POST /coordinator/drives`, `POST .../{id}/delete` | coordinator | M1 |
 | `GET/POST /login`, `GET/POST /register`, `POST /logout` | public | M2 |
-| `GET /student/drives`, `GET /student/drives/{id}`, `POST /student/drives/{id}/check`, `POST /student/drives/{id}/apply` | student | M2 |
+| `GET /student/drives`, `GET /student/drives/{id}`, `GET /student/drives/{id}/check`, `POST /student/drives/{id}/apply` | student | M2 |
 | `GET /student/applications`, `POST /student/applications/{id}/withdraw` | student | M2 |
 | `GET /student/profile`, `POST /student/profile` | student | M3 |
 | `GET /coordinator/drives/{id}/applicants`, `POST /coordinator/applications/{id}/status` | coordinator | M3 |
@@ -396,6 +396,10 @@ monolith vs microservice; what happens when the eligibility service is down.
 
 Branch `m2-apply-flow`. About 8 hours. Files are listed with every method you write.
 
+**Status: BUILT.** See `docs/m2.md` for what exists, how it was tested and the viva notes. The steps below are
+kept as the build order. Differences from this text: `/check` is a GET, `AuthController` also has an
+`@InitBinder` allow-list against overposting, and `LoginInterceptor` checks `request.getSession(false)`.
+
 ### 7.1 Session user + login (≈ 90 min)
 1. `config/SessionUser.java`: `public record SessionUser(Long id, String name, String role) {}` with a constant
    `public static final String KEY = "user";`. `role` is `"STUDENT"` or `"COORDINATOR"`.
@@ -484,7 +488,7 @@ any `RuntimeException` rolls it back. All our exceptions are `RuntimeException`,
 `controller/StudentController.java` (all methods read `@SessionAttribute(SessionUser.KEY) SessionUser user`):
 - `GET /student/drives` → model `drives` = `driveService.findOpenDrives()`, view `student/drives`.
 - `GET /student/drives/{id}` → model `drive`, view `student/drive-detail`.
-- `POST /student/drives/{id}/check` → model `drive` + `result` (`checkEligibility`), same view. Catch
+- `GET /student/drives/{id}/check` (a GET because it only reads) → model `drive` + `result` (`checkEligibility`), same view. Catch
   `EligibilityUnavailableException` → model `error`.
 - `POST /student/drives/{id}/apply` → try `apply`, flash "Applied successfully", `redirect:/student/applications`;
   catch `ApplyException e` → flash `error` = message and `reasons` = `e.getReasons()`, `redirect:/student/drives/{id}`;
@@ -583,6 +587,9 @@ Branch `m3-api-delivery`. About 8 hours plus the report.
    `POST /student/profile(@Valid @ModelAttribute("student") Student form, BindingResult result, ...)`.
    Note: the form has no password/email fields, so `@NotBlank email` would fail: put `email` as a read-only hidden field,
    or validate only the fields you edit by hand. Simplest: include `email` and `regNo` as `readonly` inputs.
+   **Security:** copy M2's `@InitBinder` from `AuthController` and allow only
+   `fullName`, `department`, `cgpa`, `backlogs`, so nobody can post `placed=true` or another `id`.
+   After saving, put a new `SessionUser` (with the new name) into the session so the navbar updates.
 3. Template `student/profile.html`.
 
 ### 8.3 Coordinator dashboard (≈ 45 min)

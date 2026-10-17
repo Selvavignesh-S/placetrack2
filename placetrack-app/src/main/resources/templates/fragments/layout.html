@@ -11,14 +11,26 @@
 
 <body>
 
+<!-- session.user is the SessionUser stored at login; the links depend on the role -->
 <nav th:fragment="nav" class="navbar navbar-expand navbar-dark bg-dark mb-4">
     <div class="container">
         <a class="navbar-brand" th:href="@{/}">PlaceTrack</a>
-        <ul class="navbar-nav me-auto">
-            <!-- M2: show these only to coordinators, add student links and the logout button -->
-            <li class="nav-item"><a class="nav-link" th:href="@{/coordinator/companies}">Companies</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/coordinator/drives}">Drives</a></li>
+        <ul class="navbar-nav me-auto" th:if="${session.user != null}">
+            <th:block th:if="${session.user.student}">
+                <li class="nav-item"><a class="nav-link" th:href="@{/student/drives}">Drives</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/student/applications}">My applications</a></li>
+            </th:block>
+            <th:block th:unless="${session.user.student}">
+                <li class="nav-item"><a class="nav-link" th:href="@{/coordinator/companies}">Companies</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/coordinator/drives}">Drives</a></li>
+            </th:block>
         </ul>
+        <div class="d-flex align-items-center" th:if="${session.user != null}">
+            <span class="navbar-text me-3" th:text="${session.user.name()}">Name</span>
+            <form method="post" th:action="@{/logout}">
+                <button class="btn btn-sm btn-outline-light">Log out</button>
+            </form>
+        </div>
     </div>
 </nav>
 
@@ -27,6 +39,15 @@
     <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
     <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 </div>
+
+<!-- Coloured badge for an ApplicationStatus: th:replace="~{fragments/layout :: statusBadge(${a.status})}" -->
+<th:block th:fragment="statusBadge(status)" th:switch="${status.name()}">
+    <span th:case="'APPLIED'" class="badge text-bg-primary">APPLIED</span>
+    <span th:case="'SHORTLISTED'" class="badge text-bg-info">SHORTLISTED</span>
+    <span th:case="'SELECTED'" class="badge text-bg-success">SELECTED</span>
+    <span th:case="'REJECTED'" class="badge text-bg-danger">REJECTED</span>
+    <span th:case="'WITHDRAWN'" class="badge text-bg-secondary">WITHDRAWN</span>
+</th:block>
 
 </body>
 </html>

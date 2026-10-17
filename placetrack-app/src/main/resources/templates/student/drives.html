@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Open drives')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <h1 class="h3 mb-3">Open placement drives</h1>
+
+    <div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+        <tr>
+            <th>Company</th><th>Role</th><th>LPA</th><th>Min CGPA</th><th>Max backlogs</th>
+            <th>Departments</th><th>Deadline</th><th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="d : ${drives}">
+            <td th:text="${d.company.name}">Zephyr</td>
+            <td th:text="${d.roleTitle}">SE Trainee</td>
+            <td th:text="${d.packageLpa}">4.5</td>
+            <td th:text="${d.minCgpa}">6.0</td>
+            <td th:text="${d.maxBacklogs}">2</td>
+            <td th:text="${d.allowedDepartments}">CSE,IT</td>
+            <td th:text="${d.deadline}">2026-10-27</td>
+            <td class="text-end text-nowrap">
+                <span th:if="${appliedDriveIds.contains(d.id)}" class="badge text-bg-success me-2">Applied</span>
+                <a class="btn btn-sm btn-primary" th:href="@{/student/drives/{id}(id=${d.id})}">View</a>
+            </td>
+        </tr>
+        <tr th:if="${drives.isEmpty()}"><td colspan="8">No open drives right now.</td></tr>
+        </tbody>
+    </table>
+    </div>
+</main>
+</body>
+</html>

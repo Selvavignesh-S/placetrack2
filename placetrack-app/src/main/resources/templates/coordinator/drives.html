@@ -11,6 +11,7 @@
         <a class="btn btn-primary" th:href="@{/coordinator/drives/new}">Create drive</a>
     </div>
 
+    <div class="table-responsive">
     <table class="table table-striped align-middle">
         <thead>
         <tr>
@@ -42,6 +43,7 @@
         <tr th:if="${drives.isEmpty()}"><td colspan="9">No drives yet.</td></tr>
         </tbody>
     </table>
+    </div>
 </main>
 </body>
 </html>
