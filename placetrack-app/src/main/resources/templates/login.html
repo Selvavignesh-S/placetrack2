@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Log in')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="container" style="max-width: 420px">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <h1 class="h3 mb-3">Log in</h1>
+
+    <form method="post" th:action="@{/login}">
+        <div class="mb-3">
+            <label class="form-label" for="email">Email</label>
+            <input class="form-control" type="email" id="email" name="email" required autofocus>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="password">Password</label>
+            <input class="form-control" type="password" id="password" name="password" required>
+        </div>
+        <button class="btn btn-primary w-100">Log in</button>
+    </form>
+
+    <p class="mt-3">New student? <a th:href="@{/register}">Register here</a></p>
+    <div class="alert alert-secondary small">
+        Demo accounts (password <code>Pass@123</code>):<br>
+        Coordinator: <code>coord1@placetrack.edu</code><br>
+        Students: <code>student1@placetrack.edu</code> … <code>student6@placetrack.edu</code>
+    </div>
+</main>
+</body>
+</html>

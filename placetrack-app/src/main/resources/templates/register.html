@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Register')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="container" style="max-width: 600px">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <h1 class="h3 mb-3">Student registration</h1>
+
+    <form method="post" th:action="@{/register}" th:object="${student}">
+        <div class="mb-3">
+            <label class="form-label">Full name</label>
+            <input class="form-control" th:field="*{fullName}" required>
+            <div class="text-danger small" th:errors="*{fullName}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input class="form-control" type="email" th:field="*{email}" required>
+            <div class="text-danger small" th:errors="*{email}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="rawPassword">Password (at least 6 characters)</label>
+            <input class="form-control" type="password" id="rawPassword" name="rawPassword" minlength="6" required>
+        </div>
+        <div class="row">
+            <div class="col mb-3">
+                <label class="form-label">Register number</label>
+                <input class="form-control" th:field="*{regNo}" required>
+                <div class="text-danger small" th:errors="*{regNo}"></div>
+            </div>
+            <div class="col mb-3">
+                <label class="form-label">Department</label>
+                <select class="form-select" th:field="*{department}" required>
+                    <option value="">Choose...</option>
+                    <option th:each="dep : ${departments}" th:value="${dep}" th:text="${dep}">CSE</option>
+                </select>
+                <div class="text-danger small" th:errors="*{department}"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mb-3">
+                <label class="form-label">CGPA</label>
+                <input class="form-control" type="number" step="0.01" min="0" max="10" th:field="*{cgpa}" required>
+                <div class="text-danger small" th:errors="*{cgpa}"></div>
+            </div>
+            <div class="col mb-3">
+                <label class="form-label">Backlogs</label>
+                <input class="form-control" type="number" min="0" th:field="*{backlogs}" required>
+                <div class="text-danger small" th:errors="*{backlogs}"></div>
+            </div>
+        </div>
+        <button class="btn btn-primary">Register</button>
+        <a class="btn btn-link" th:href="@{/login}">Back to login</a>
+    </form>
+</main>
+</body>
+</html>

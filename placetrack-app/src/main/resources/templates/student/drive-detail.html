@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Drive')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="container" style="max-width: 760px">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <!-- Reasons sent back after a refused Apply (flash attribute "reasons") -->
+    <ul class="alert alert-danger ps-4" th:if="${reasons != null and !reasons.isEmpty()}">
+        <li th:each="r : ${reasons}" th:text="${r}">CGPA 7.2 is below the required 7.5</li>
+    </ul>
+
+    <!-- Result of "Check eligibility" (model attribute "result") -->
+    <div th:if="${result != null}">
+        <div th:if="${result.eligible()}" class="alert alert-success">You are eligible for this drive.</div>
+        <div th:unless="${result.eligible()}" class="alert alert-warning">
+            <strong>You are not eligible:</strong>
+            <ul class="mb-0">
+                <li th:each="r : ${result.reasons()}" th:text="${r}">CGPA 7.2 is below the required 7.5</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h1 class="h4 card-title" th:text="${drive.roleTitle}">Cloud Engineer</h1>
+            <h2 class="h6 text-muted" th:text="${drive.company.name}">Nimbus Cloud</h2>
+            <table class="table table-sm mt-3 mb-3">
+                <tr><th>Package</th><td th:text="${drive.packageLpa} + ' LPA'">9.0 LPA</td></tr>
+                <tr><th>Minimum CGPA</th><td th:text="${drive.minCgpa}">7.5</td></tr>
+                <tr><th>Maximum backlogs</th><td th:text="${drive.maxBacklogs}">0</td></tr>
+                <tr><th>Departments</th><td th:text="${drive.allowedDepartments}">IT,CSE</td></tr>
+                <tr>
+                    <th>Deadline</th>
+                    <td>
+                        <span th:text="${drive.deadline}">2026-10-24</span>
+                        <span th:unless="${drive.open}" class="badge text-bg-secondary ms-2">Closed</span>
+                    </td>
+                </tr>
+            </table>
+
+            <a class="btn btn-outline-primary" th:href="@{/student/drives/{id}/check(id=${drive.id})}">Check eligibility</a>
+            <form class="d-inline" method="post" th:action="@{/student/drives/{id}/apply(id=${drive.id})}">
+                <button class="btn btn-primary">Apply</button>
+            </form>
+            <a class="btn btn-link" th:href="@{/student/drives}">Back to drives</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

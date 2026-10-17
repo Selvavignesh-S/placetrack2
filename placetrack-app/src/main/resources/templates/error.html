@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Spring Boot shows this page for every error (403, 404, 500 ...) -->
+<head th:replace="~{fragments/layout :: head('Error')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="container" style="max-width: 600px">
+    <h1 class="h3" th:text="${status} + ' ' + ${error}">404 Not Found</h1>
+    <p th:if="${status == 403}">You do not have access to this page.</p>
+    <!-- Only show messages for client errors; a 500 message could reveal internal details -->
+    <p th:if="${status < 500 and message != null and !message.isEmpty()}" th:text="${message}">Drive 9 not found</p>
+    <p th:if="${status >= 500}">Something went wrong on our side. Please try again.</p>
+    <a class="btn btn-primary" th:href="@{/}">Go to home page</a>
+</main>
+</body>
+</html>
