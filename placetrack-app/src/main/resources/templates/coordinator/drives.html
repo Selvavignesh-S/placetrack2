@@ -33,7 +33,7 @@
                 <span th:unless="${d.open}" class="badge text-bg-secondary">Closed</span>
             </td>
             <td class="text-end text-nowrap">
-                <!-- M3: add an "Applicants" link here -->
+                <a class="btn btn-sm btn-outline-primary" th:href="@{/coordinator/drives/{id}/applicants(id=${d.id})}">Applicants</a>
                 <a class="btn btn-sm btn-outline-secondary" th:href="@{/coordinator/drives/{id}/edit(id=${d.id})}">Edit</a>
                 <form class="d-inline" method="post" th:action="@{/coordinator/drives/{id}/delete(id=${d.id})}">
                     <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this drive?')">Delete</button>

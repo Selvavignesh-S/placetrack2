@@ -19,8 +19,10 @@
             <th:block th:if="${session.user.student}">
                 <li class="nav-item"><a class="nav-link" th:href="@{/student/drives}">Drives</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/student/applications}">My applications</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/student/profile}">Profile</a></li>
             </th:block>
             <th:block th:unless="${session.user.student}">
+                <li class="nav-item"><a class="nav-link" th:href="@{/coordinator/dashboard}">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/coordinator/companies}">Companies</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/coordinator/drives}">Drives</a></li>
             </th:block>

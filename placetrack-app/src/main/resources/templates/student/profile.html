@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My profile')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="container" style="max-width: 600px">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <h1 class="h3 mb-3">My profile</h1>
+
+    <table class="table table-sm mb-4">
+        <tr><th>Email</th><td th:text="${student.email}">student1@placetrack.edu</td></tr>
+        <tr><th>Register number</th><td th:text="${student.regNo}">23IT001</td></tr>
+        <tr>
+            <th>Placement</th>
+            <td>
+                <span th:if="${student.placed}" class="badge text-bg-success">Placed</span>
+                <span th:unless="${student.placed}" class="badge text-bg-secondary">Not placed yet</span>
+            </td>
+        </tr>
+    </table>
+
+    <form method="post" th:action="@{/student/profile}" th:object="${student}">
+        <div class="mb-3">
+            <label class="form-label">Full name</label>
+            <input class="form-control" th:field="*{fullName}" required>
+            <div class="text-danger small" th:errors="*{fullName}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Department</label>
+            <select class="form-select" th:field="*{department}" required>
+                <option th:each="dep : ${departments}" th:value="${dep}" th:text="${dep}">CSE</option>
+            </select>
+            <div class="text-danger small" th:errors="*{department}"></div>
+        </div>
+        <div class="row">
+            <div class="col mb-3">
+                <label class="form-label">CGPA</label>
+                <input class="form-control" type="number" step="0.01" min="0" max="10" th:field="*{cgpa}" required>
+                <div class="text-danger small" th:errors="*{cgpa}"></div>
+            </div>
+            <div class="col mb-3">
+                <label class="form-label">Backlogs</label>
+                <input class="form-control" type="number" min="0" th:field="*{backlogs}" required>
+                <div class="text-danger small" th:errors="*{backlogs}"></div>
+            </div>
+        </div>
+        <button class="btn btn-primary">Save</button>
+    </form>
+</main>
+</body>
+</html>

@@ -557,6 +557,11 @@ eligibility service is slow or down (timeouts → exception → message, nothing
 
 Branch `m3-api-delivery`. About 8 hours plus the report.
 
+**Status: CODE BUILT.** See `docs/m3.md` for what exists, how it was tested, the concept notes and viva answers.
+Still to do by people: screenshots, the architecture image, the report PDF, `docs/team.md`, the optional CI workflow.
+Differences from the text below: the applicants page uses one form per row with one button per allowed move;
+the profile uses a `@ModelAttribute` loader plus an `@InitBinder` allow-list; `POST /api/companies` ignores any `id`.
+
 ### 8.1 Applicants + status update (≈ 90 min)
 1. Add to M2's `ApplicationService`:
    - `List<Application> applicantsOfDrive(Long driveId)` → `applicationRepository.findApplicantsOfDrive(driveId)`.

@@ -39,7 +39,7 @@ public class AuthController {
         if (user == null) {
             return "redirect:/login";
         }
-        return user.isStudent() ? "redirect:/student/drives" : "redirect:/coordinator/drives";
+        return user.isStudent() ? "redirect:/student/drives" : "redirect:/coordinator/dashboard";
     }
 
     @GetMapping("/login")

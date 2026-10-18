@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <h1 class="h3 mb-3">Dashboard</h1>
+
+    <div class="row g-3 mb-4">
+        <div class="col-sm-4">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">Students</div>
+                <div class="fs-2 fw-semibold" th:text="${totalStudents}">6</div>
+            </div></div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">Placed</div>
+                <div class="fs-2 fw-semibold" th:text="${placedStudents}">1</div>
+            </div></div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">Open drives</div>
+                <div class="fs-2 fw-semibold" th:text="${openDrives}">4</div>
+            </div></div>
+        </div>
+    </div>
+
+    <h2 class="h5">Applications per drive</h2>
+    <!-- Each row is an Object[] from the HQL GROUP BY query: [companyName, roleTitle, count] -->
+    <div class="table-responsive">
+    <table class="table table-striped">
+        <thead><tr><th>Company</th><th>Role</th><th class="text-end">Applications</th></tr></thead>
+        <tbody>
+        <tr th:each="row : ${rows}">
+            <td th:text="${row[0]}">Zephyr Systems</td>
+            <td th:text="${row[1]}">Software Engineer Trainee</td>
+            <td class="text-end" th:text="${row[2]}">2</td>
+        </tr>
+        <tr th:if="${rows.isEmpty()}"><td colspan="3">No drives yet.</td></tr>
+        </tbody>
+    </table>
+    </div>
+</main>
+</body>
+</html>

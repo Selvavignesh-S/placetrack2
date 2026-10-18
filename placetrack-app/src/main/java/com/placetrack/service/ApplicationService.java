@@ -95,6 +95,37 @@ public class ApplicationService {
         application.setStatus(ApplicationStatus.WITHDRAWN);
     }
 
+    /** Applicants of one drive, best CGPA first (HQL with join fetch). */
+    public List<Application> applicantsOfDrive(Long driveId) {
+        return applicationRepository.findApplicantsOfDrive(driveId);
+    }
+
+    /**
+     * Coordinator moves an application: APPLIED → SHORTLISTED / REJECTED, SHORTLISTED → SELECTED / REJECTED.
+     * SELECTED also marks the student as placed. Both changes are in ONE transaction:
+     * either both are saved or, if anything fails, neither is.
+     */
+    @Transactional
+    public Application updateStatus(Long applicationId, ApplicationStatus next) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+
+        ApplicationStatus current = application.getStatus();
+        boolean allowed = (current == ApplicationStatus.APPLIED
+                        && (next == ApplicationStatus.SHORTLISTED || next == ApplicationStatus.REJECTED))
+                || (current == ApplicationStatus.SHORTLISTED
+                        && (next == ApplicationStatus.SELECTED || next == ApplicationStatus.REJECTED));
+        if (!allowed) {
+            throw new ApplyException("Cannot move an application from " + current + " to " + next);
+        }
+
+        application.setStatus(next);
+        if (next == ApplicationStatus.SELECTED) {
+            application.getStudent().setPlaced(true);
+        }
+        return application; // saved at commit by dirty checking
+    }
+
     private Student getStudent(Long studentId) {
         return studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));

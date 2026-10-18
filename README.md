@@ -35,7 +35,8 @@ Spring Boot service on its own port. If that service is down, the student is tol
 | --- | --- | --- |
 | Data layer, inheritance, HQL, company and drive pages, Session demo, eligibility microservice | M1 | ✅ Done |
 | Login and roles, check eligibility, apply, withdraw, AOP audit log, BeanFactory demo | M2 | ✅ Done |
-| Applicants and status changes, student profile, dashboard, REST API, Postman, report | M3 | ⏳ In progress |
+| Applicants and status changes, student profile, dashboard, REST API, Postman requests | M3 | ✅ Done |
+| Screenshots, architecture diagram image, report PDF, team details | All | ⏳ To do |
 
 The detailed plan for every member is in [`docs/PLAN.md`](docs/PLAN.md).
 
@@ -226,12 +227,16 @@ Engineer Trainee, and Zephyr Support Engineer (deadline already passed, so it is
 
 ### As a coordinator (`coord1@placetrack.edu`)
 
-1. Open http://localhost:8080 and log in.
+1. Open http://localhost:8080 and log in. You land on the **Dashboard**: number of students, placed students,
+   open drives, and applications per drive.
 2. **Companies:** add, edit or delete companies. A company that has drives cannot be deleted; names must be unique.
 3. **Drives → Create drive:** pick a company, enter the role, package (LPA), minimum CGPA, maximum backlogs,
    tick the allowed departments and choose a deadline.
    Company missing from the list? Click **Add a new company**: after saving you come back with it selected.
 4. A drive that already has applications cannot be deleted.
+5. **Drives → Applicants** lists everyone who applied, best CGPA first. Move each application with the buttons:
+   APPLIED → **Shortlist** or **Reject**, SHORTLISTED → **Select** or **Reject**. Other moves are refused.
+   **Select** also marks the student as placed, in the same database transaction.
 
 ### As a student (`student1@placetrack.edu`, or register a new account)
 
@@ -241,6 +246,8 @@ Engineer Trainee, and Zephyr Support Engineer (deadline already passed, so it is
    "CGPA 7.2 is below the required 7.5". It saves nothing.
 4. **Apply** saves the application if every rule passes; otherwise the reasons are shown and nothing is saved.
 5. **My applications** shows each application's status. **Withdraw** is possible while it is APPLIED or SHORTLISTED.
+6. **Profile** lets the student change their name, department, CGPA and backlogs. Email, register number and
+   placement status cannot be changed there.
 
 Try `student2@placetrack.edu` on the Nimbus Cloud Engineer drive to see a refusal with two reasons.
 
@@ -341,7 +348,7 @@ In the IDE: right-click `src/test/java` → **Run 'All Tests'** (IntelliJ) or **
 | Project | Tests | What they check |
 | --- | --- | --- |
 | `eligibility-service` | 7 | The 3 rules; the REST endpoint returns 200 for valid JSON and 400 for a missing field |
-| `placetrack-app` | 14 | HQL queries, seed data and inheritance, and the apply / withdraw rules (Mockito) |
+| `placetrack-app` | 24 | HQL queries, seed data and inheritance, apply / withdraw / status rules (Mockito), REST API (MockMvc) |
 
 The tests use their own temporary in-memory database, so they never touch your `data/` folder.
 
@@ -359,8 +366,15 @@ To build and test everything the way a CI server would:
    `PlaceTrack.postman_collection.json` and `PlaceTrack.local.postman_environment.json`.
 3. Top right, select the environment **"PlaceTrack local"** (sets `{{baseUrl}}` = `http://localhost:8080` and
    `{{eligUrl}}` = `http://localhost:8081`).
-4. Open folder **00 Eligibility service** and **Send** each request, or right-click the collection → **Run** to run
-   them all and see the green test results.
+4. Open a folder and **Send** each request, or right-click the collection → **Run** to run them all and see the
+   green test results.
+
+| Folder | Requests | Notes |
+| --- | --- | --- |
+| 00 Eligibility service | 5 | Calls port 8081 directly |
+| 01 Drives and companies | 5 | Main app REST API |
+| 02 Applications | 7 | Needs **fresh seed data** (reset the data first), because it applies as student1 |
+| 03 Service down (run by hand) | 1 | Stop the eligibility service first; leave this folder out of a normal run |
 
 ### Eligibility service API (port 8081)
 
@@ -379,7 +393,24 @@ gives
   "reasons": ["CGPA 7.2 is below the required 7.5", "Backlogs 1 exceed the limit of 0"] }
 ```
 
-The main app's REST API (`/api/drives`, `/api/applications`, …) is being built by M3; see `docs/PLAN.md` section 8.4.
+### Main app REST API (port 8080)
+
+| Method + path | Body | Success | Errors |
+| --- | --- | --- | --- |
+| `GET /api/drives` | – | `200` list of open drives | – |
+| `GET /api/drives/{id}` | – | `200` one drive | `404 {"error": "Drive 99 not found"}` |
+| `POST /api/companies` | `{"name": "Acme", "sector": "Robotics"}` | `201` the new company | `400` missing name or duplicate |
+| `POST /api/applications` | `{"studentId": 3, "driveId": 2}` | `201` the new application | `400 {"error", "reasons"}` when a rule fails, `404` unknown student or drive, `503` eligibility service down |
+| `GET /api/students/{id}/applications` | – | `200` that student's applications | – |
+
+Example refusal:
+```json
+{ "error": "You are not eligible for this drive",
+  "reasons": ["CGPA 7.2 is below the required 7.5", "Backlogs 1 exceed the limit of 0"] }
+```
+
+Seeded ids: coordinators 1–2, `student1`…`student6` are ids 3–8; drives 1–5 (drive 2 = Nimbus Cloud Engineer,
+drive 4 = expired). The API has **no login** on purpose to keep Postman testing simple; see `docs/m3.md`.
 
 ---
 
@@ -409,8 +440,9 @@ placetrack2/
         │   ├── PlacetrackApplication.java      main
         │   ├── model/        entities: User → Student, Coordinator; Company, Drive, Application
         │   ├── repository/   Spring Data repositories + HQL queries
-        │   ├── service/      business rules (CompanyService, DriveService, AuthService, ApplicationService)
+        │   ├── service/      business rules (Company, Drive, Auth, Application, Student services)
         │   ├── controller/   MVC controllers (pages)
+        │   ├── api/          REST API: ApiController, ApiErrorHandler, ApplyRequest
         │   ├── client/       EligibilityClient: calls the microservice
         │   ├── aspect/       ApplyAuditAspect (AOP)
         │   ├── exception/    ApplyException, EligibilityUnavailableException
@@ -563,4 +595,5 @@ Override any property when starting, without editing files:
 | [`docs/PLAN.md`](docs/PLAN.md) | Scope decisions, data model, business rules, all routes, each member's step-by-step plan, demo scenarios |
 | [`docs/m1.md`](docs/m1.md) | Data layer, ER diagram, inheritance, HQL, SessionFactory/Session/Transaction, eligibility service, viva answers |
 | [`docs/m2.md`](docs/m2.md) | Login, interceptor, apply flow, `@Transactional`, AOP, DI and BeanFactory demo, viva answers |
+| [`docs/m3.md`](docs/m3.md) | Status changes and the transaction demo, profile, dashboard, REST API, Postman, REST vs SOAP, Spring Cloud, DevOps, viva answers |
 | [`docs/team.md`](docs/team.md) | Team members and register numbers |

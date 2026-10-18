@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Applicants')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <h1 class="h3">Applicants</h1>
+    <p class="text-muted" th:text="${drive.company.name} + ' · ' + ${drive.roleTitle}">Nimbus Cloud · Cloud Engineer</p>
+
+    <div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+        <tr><th>Name</th><th>Reg no</th><th>Dept</th><th>CGPA</th><th>Backlogs</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${applications}">
+            <td th:text="${a.student.fullName}">Aarav Kumar</td>
+            <td th:text="${a.student.regNo}">23IT001</td>
+            <td th:text="${a.student.department}">IT</td>
+            <td th:text="${a.student.cgpa}">8.6</td>
+            <td th:text="${a.student.backlogs}">0</td>
+            <td><th:block th:replace="~{fragments/layout :: statusBadge(${a.status})}"></th:block></td>
+            <td class="text-end text-nowrap">
+                <!-- Only the allowed moves get a button; the clicked button sends its own status value.
+                     The service checks the move again, so a hand-made request cannot skip a step. -->
+                <form method="post" th:action="@{/coordinator/applications/{id}/status(id=${a.id})}"
+                      th:if="${a.status.name() == 'APPLIED' or a.status.name() == 'SHORTLISTED'}">
+                    <input type="hidden" name="driveId" th:value="${drive.id}">
+                    <button class="btn btn-sm btn-outline-primary" name="status" value="SHORTLISTED"
+                            th:if="${a.status.name() == 'APPLIED'}">Shortlist</button>
+                    <button class="btn btn-sm btn-outline-success" name="status" value="SELECTED"
+                            th:if="${a.status.name() == 'SHORTLISTED'}">Select</button>
+                    <button class="btn btn-sm btn-outline-danger" name="status" value="REJECTED">Reject</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${applications.isEmpty()}"><td colspan="7">No applications yet.</td></tr>
+        </tbody>
+    </table>
+    </div>
+    <a class="btn btn-link px-0" th:href="@{/coordinator/drives}">Back to drives</a>
+</main>
+</body>
+</html>

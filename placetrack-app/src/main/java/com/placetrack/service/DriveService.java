@@ -43,6 +43,11 @@ public class DriveService {
         return driveRepository.save(drive);
     }
 
+    /** Rows of [companyName, roleTitle, applicationCount] for the dashboard (HQL GROUP BY). */
+    public List<Object[]> applicationCounts() {
+        return applicationRepository.countApplicationsPerDrive();
+    }
+
     public void delete(Long id) {
         if (applicationRepository.countByDriveId(id) > 0) {
             throw new IllegalArgumentException("Students have applied to this drive, so it cannot be deleted.");
