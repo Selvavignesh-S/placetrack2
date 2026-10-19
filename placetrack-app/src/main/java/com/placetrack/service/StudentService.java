@@ -13,23 +13,28 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
 
+    // Constructor injection: Spring passes in the beans this class needs
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
 
+    // One student, or 404 if the id does not exist
     public Student getById(Long id) {
         return studentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
     }
 
+    // Insert or update (used by the profile page)
     public Student save(Student student) {
         return studentRepository.save(student);
     }
 
+    // Dashboard: total students
     public long countStudents() {
         return studentRepository.count();
     }
 
+    // Dashboard: placed students
     public long countPlaced() {
         return studentRepository.countByPlacedTrue();
     }

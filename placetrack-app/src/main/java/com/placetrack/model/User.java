@@ -22,14 +22,17 @@ import jakarta.validation.constraints.NotBlank;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User {
 
+    // Primary key; the database numbers new rows automatically (IDENTITY)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Shown in lists and the navbar
     @NotBlank
     @Column(nullable = false)
     private String fullName;
 
+    // Login name; unique across all users
     @NotBlank
     @Email
     @Column(nullable = false, unique = true)
@@ -40,14 +43,17 @@ public abstract class User {
     @Column(nullable = false)
     private String password;
 
+    // JPA needs a no-argument constructor to create objects from rows
     protected User() {
     }
 
+    // Used by the Student and Coordinator constructors
     protected User(String fullName, String email) {
         this.fullName = fullName;
         this.email = email;
     }
 
+    // --- Getters and setters (used by Spring forms, Thymeleaf and JSON) ---
     public Long getId() {
         return id;
     }

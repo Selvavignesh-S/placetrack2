@@ -30,6 +30,7 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final EligibilityClient eligibilityClient;
 
+    // Constructor injection: Spring passes in the beans this class needs
     public ApplicationService(StudentRepository studentRepository, DriveService driveService,
             ApplicationRepository applicationRepository, EligibilityClient eligibilityClient) {
         this.studentRepository = studentRepository;
@@ -47,21 +48,26 @@ public class ApplicationService {
         Student student = getStudent(studentId);
         Drive drive = driveService.getById(driveId);
 
+        // Rule: placed students cannot apply again
         if (student.isPlaced()) {
             throw new ApplyException("You are already placed, so you cannot apply to more drives");
         }
+        // Rule: deadline must not have passed
         if (!drive.isOpen()) {
             throw new ApplyException("The deadline for this drive has passed");
         }
+        // Rule: only one application per drive
         if (applicationRepository.existsByStudentIdAndDriveId(studentId, driveId)) {
             throw new ApplyException("You have already applied to this drive");
         }
 
+        // Rules: CGPA, backlogs, department (asked from the eligibility microservice)
         EligibilityResult result = eligibilityClient.check(student, drive); // may throw EligibilityUnavailableException
         if (!result.eligible()) {
             throw new ApplyException("You are not eligible for this drive", result.reasons());
         }
 
+        // All rules passed: save the application
         try {
             return applicationRepository.save(new Application(student, drive, ApplicationStatus.APPLIED));
         } catch (DataIntegrityViolationException e) {
@@ -75,6 +81,7 @@ public class ApplicationService {
         return eligibilityClient.check(getStudent(studentId), driveService.getById(driveId));
     }
 
+    // One student's applications, newest first
     public List<Application> myApplications(Long studentId) {
         return applicationRepository.findByStudent(studentId);
     }
@@ -126,6 +133,7 @@ public class ApplicationService {
         return application; // saved at commit by dirty checking
     }
 
+    // Load a student, or 404 if the id does not exist
     private Student getStudent(Long studentId) {
         return studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));

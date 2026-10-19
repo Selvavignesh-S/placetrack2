@@ -16,5 +16,6 @@ public interface DriveRepository extends JpaRepository<Drive, Long> {
     @Query("select d from Drive d where d.deadline >= :today order by d.deadline")
     List<Drive> findOpenDrives(@Param("today") LocalDate today);
 
+    // How many drives a company has. A company with drives cannot be deleted.
     long countByCompanyId(Long companyId);
 }

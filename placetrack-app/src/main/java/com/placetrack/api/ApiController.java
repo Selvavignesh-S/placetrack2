@@ -35,6 +35,7 @@ public class ApiController {
     private final CompanyService companyService;
     private final ApplicationService applicationService;
 
+    // Constructor injection: Spring passes in the beans this class needs
     public ApiController(DriveService driveService, CompanyService companyService,
             ApplicationService applicationService) {
         this.driveService = driveService;

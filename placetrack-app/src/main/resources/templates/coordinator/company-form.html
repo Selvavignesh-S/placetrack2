@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<!-- Coordinator: add / edit a company (CompanyController.newForm, editForm) -->
 <head th:replace="~{fragments/layout :: head('Company')}"></head>
 <body>
 <nav th:replace="~{fragments/layout :: nav}"></nav>
@@ -8,6 +9,7 @@
 
     <!-- th:object binds the form to the "company" model attribute; *{field} reads/writes its fields -->
     <form method="post" th:action="@{/coordinator/companies}" th:object="${company}">
+        <!-- Empty id = create, filled id = update -->
         <input type="hidden" th:field="*{id}">
         <!-- Present when the user came from the drive form, so saving goes back there -->
         <input type="hidden" name="from" th:if="${from != null}" th:value="${from}">

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<!-- Coordinator: company list (CompanyController.list) -->
+<!-- th:replace pulls in a shared piece from fragments/layout.html (head, navbar, messages) -->
 <head th:replace="~{fragments/layout :: head('Companies')}"></head>
 <body>
 <nav th:replace="~{fragments/layout :: nav}"></nav>
@@ -11,16 +13,19 @@
         <a class="btn btn-primary" th:href="@{/coordinator/companies/new}">Add company</a>
     </div>
 
+    <div class="table-responsive">
     <table class="table table-striped align-middle">
         <thead>
         <tr><th>Name</th><th>Sector</th><th></th></tr>
         </thead>
         <tbody>
+        <!-- th:each repeats the row for every company in the model; ${c.name} calls getName() -->
         <tr th:each="c : ${companies}">
             <td th:text="${c.name}">Zephyr</td>
             <td th:text="${c.sector}">Software</td>
             <td class="text-end">
                 <a class="btn btn-sm btn-outline-secondary" th:href="@{/coordinator/companies/{id}/edit(id=${c.id})}">Edit</a>
+                <!-- Delete is a POST form (not a link) because it changes data -->
                 <form class="d-inline" method="post" th:action="@{/coordinator/companies/{id}/delete(id=${c.id})}">
                     <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this company?')">Delete</button>
                 </form>
@@ -29,6 +34,7 @@
         <tr th:if="${companies.isEmpty()}"><td colspan="3">No companies yet.</td></tr>
         </tbody>
     </table>
+    </div>
 </main>
 </body>
 </html>

@@ -20,11 +20,13 @@ public class ApplicantController {
     private final DriveService driveService;
     private final ApplicationService applicationService;
 
+    // Constructor injection: Spring passes in the beans this class needs
     public ApplicantController(DriveService driveService, ApplicationService applicationService) {
         this.driveService = driveService;
         this.applicationService = applicationService;
     }
 
+    // GET: applicants page of one drive
     @GetMapping("/coordinator/drives/{id}/applicants")
     public String applicants(@PathVariable Long id, Model model) {
         model.addAttribute("drive", driveService.getById(id));

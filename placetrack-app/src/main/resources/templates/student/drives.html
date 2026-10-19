@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<!-- Student: open drives (StudentController.drives) -->
 <head th:replace="~{fragments/layout :: head('Open drives')}"></head>
 <body>
 <nav th:replace="~{fragments/layout :: nav}"></nav>
@@ -16,15 +17,17 @@
         </tr>
         </thead>
         <tbody>
+        <!-- One row per open drive -->
         <tr th:each="d : ${drives}">
             <td th:text="${d.company.name}">Zephyr</td>
             <td th:text="${d.roleTitle}">SE Trainee</td>
             <td th:text="${d.packageLpa}">4.5</td>
             <td th:text="${d.minCgpa}">6.0</td>
             <td th:text="${d.maxBacklogs}">2</td>
-            <td th:text="${d.allowedDepartments}">CSE,IT</td>
+            <td th:text="${#strings.replace(d.allowedDepartments, ',', ', ')}">CSE,IT</td>
             <td th:text="${d.deadline}">2026-10-27</td>
             <td class="text-end text-nowrap">
+                <!-- appliedDriveIds comes from the controller: drives this student already applied to -->
                 <span th:if="${appliedDriveIds.contains(d.id)}" class="badge text-bg-success me-2">Applied</span>
                 <a class="btn btn-sm btn-primary" th:href="@{/student/drives/{id}(id=${d.id})}">View</a>
             </td>

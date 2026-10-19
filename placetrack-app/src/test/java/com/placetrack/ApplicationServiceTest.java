@@ -37,6 +37,7 @@ import com.placetrack.service.DriveService;
 @ExtendWith(MockitoExtension.class)
 class ApplicationServiceTest {
 
+    // @Mock = fake objects; we decide what they return with when(...)
     @Mock StudentRepository studentRepository;
     @Mock DriveService driveService;
     @Mock ApplicationRepository applicationRepository;
@@ -46,6 +47,7 @@ class ApplicationServiceTest {
     Student student;
     Drive drive;
 
+    // Runs before every test: fresh test data
     @BeforeEach
     void setUp() {
         student = new Student("Aarav", "a@x.edu", "R1", "IT", 8.6, 0);
@@ -55,11 +57,13 @@ class ApplicationServiceTest {
         drive.setId(10L);
     }
 
+    // Make the fake repositories return our student and drive
     private void studentAndDriveExist() {
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
         when(driveService.getById(10L)).thenReturn(drive);
     }
 
+    // Happy path: saved as APPLIED
     @Test
     void eligibleStudentIsSavedAsApplied() {
         studentAndDriveExist();
@@ -72,6 +76,7 @@ class ApplicationServiceTest {
         assertEquals(student, saved.getStudent());
     }
 
+    // Placed student refused; the eligibility service is never called
     @Test
     void placedStudentIsRefusedBeforeCallingTheService() {
         studentAndDriveExist();
@@ -81,6 +86,7 @@ class ApplicationServiceTest {
         verify(eligibilityClient, never()).check(any(), any());
     }
 
+    // Deadline passed
     @Test
     void expiredDriveIsRefused() {
         studentAndDriveExist();
@@ -90,6 +96,7 @@ class ApplicationServiceTest {
         assertEquals("The deadline for this drive has passed", e.getMessage());
     }
 
+    // Already applied: nothing saved
     @Test
     void secondApplicationIsRefused() {
         studentAndDriveExist();
@@ -99,6 +106,7 @@ class ApplicationServiceTest {
         verify(applicationRepository, never()).save(any());
     }
 
+    // Not eligible: reasons passed on, nothing saved
     @Test
     void ineligibleStudentGetsReasonsAndNothingIsSaved() {
         studentAndDriveExist();
@@ -110,6 +118,7 @@ class ApplicationServiceTest {
         verify(applicationRepository, never()).save(any());
     }
 
+    // Eligibility service down: nothing saved
     @Test
     void serviceDownMeansNothingIsSaved() {
         studentAndDriveExist();
@@ -120,6 +129,7 @@ class ApplicationServiceTest {
         verify(applicationRepository, never()).save(any());
     }
 
+    // Withdraw allowed only while APPLIED or SHORTLISTED
     @Test
     void withdrawWorksFromShortlistedButNotFromSelected() {
         Application app = new Application(student, drive, ApplicationStatus.SHORTLISTED);
@@ -132,6 +142,7 @@ class ApplicationServiceTest {
         assertThrows(ApplyException.class, () -> service.withdraw(5L, 1L));
     }
 
+    // Another student's application looks like 'not found'
     @Test
     void cannotWithdrawSomeoneElsesApplication() {
         Application app = new Application(student, drive, ApplicationStatus.APPLIED);

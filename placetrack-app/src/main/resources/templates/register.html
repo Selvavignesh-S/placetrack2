@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<!-- Student sign-up (AuthController.registerForm). th:object binds the form to a Student. -->
 <head th:replace="~{fragments/layout :: head('Register')}"></head>
 <body>
 <nav th:replace="~{fragments/layout :: nav}"></nav>
-<main class="container" style="max-width: 600px">
+<main class="container auth-wrap wide">
     <div th:replace="~{fragments/layout :: flash}"></div>
-    <h1 class="h3 mb-3">Student registration</h1>
+    <div class="card">
+    <div class="card-body">
+    <h1 class="h3 mb-1">Create your student account</h1>
+    <p class="auth-subtitle">Your CGPA, backlogs and department decide which drives you can apply to.</p>
 
     <form method="post" th:action="@{/register}" th:object="${student}">
         <div class="mb-3">
@@ -20,6 +24,7 @@
         </div>
         <div class="mb-3">
             <label class="form-label" for="rawPassword">Password (at least 6 characters)</label>
+            <!-- Not bound to Student: sent separately as rawPassword and hashed in AuthService -->
             <input class="form-control" type="password" id="rawPassword" name="rawPassword" minlength="6" required>
         </div>
         <div class="row">
@@ -52,6 +57,8 @@
         <button class="btn btn-primary">Register</button>
         <a class="btn btn-link" th:href="@{/login}">Back to login</a>
     </form>
+    </div>
+    </div>
 </main>
 </body>
 </html>

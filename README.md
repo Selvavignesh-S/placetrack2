@@ -592,6 +592,7 @@ Override any property when starting, without editing files:
 
 | File | Contents |
 | --- | --- |
+| [`docs/STUDY_GUIDE.md`](docs/STUDY_GUIDE.md) | **Start here to learn the project:** structure, every class and entity, the main flows, all concepts, annotation cheat sheet, self-test questions |
 | [`docs/PLAN.md`](docs/PLAN.md) | Scope decisions, data model, business rules, all routes, each member's step-by-step plan, demo scenarios |
 | [`docs/m1.md`](docs/m1.md) | Data layer, ER diagram, inheritance, HQL, SessionFactory/Session/Transaction, eligibility service, viva answers |
 | [`docs/m2.md`](docs/m2.md) | Login, interceptor, apply flow, `@Transactional`, AOP, DI and BeanFactory demo, viva answers |

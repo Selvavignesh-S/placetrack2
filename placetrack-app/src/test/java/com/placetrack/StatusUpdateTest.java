@@ -32,15 +32,17 @@ import com.placetrack.service.DriveService;
 @ExtendWith(MockitoExtension.class)
 class StatusUpdateTest {
 
+    // @Mock = fake objects; we decide what they return with when(...)
     @Mock StudentRepository studentRepository;
     @Mock DriveService driveService;
     @Mock ApplicationRepository applicationRepository;
     @Mock EligibilityClient eligibilityClient;
-    @InjectMocks ApplicationService service;
+    @InjectMocks ApplicationService service; // the real service, built with the mocks above
 
     Student student;
     Application application;
 
+    // Runs before every test: fresh test data
     @BeforeEach
     void setUp() {
         student = new Student("Rohan", "r@x.edu", "R5", "ECE", 9.1, 0);
@@ -50,6 +52,7 @@ class StatusUpdateTest {
         when(applicationRepository.findById(1L)).thenReturn(Optional.of(application));
     }
 
+    // Normal path; SELECTED also sets placed
     @Test
     void appliedCanBeShortlistedThenSelected() {
         service.updateStatus(1L, ApplicationStatus.SHORTLISTED);
@@ -61,6 +64,7 @@ class StatusUpdateTest {
         assertTrue(student.isPlaced()); // the second change of the same transaction
     }
 
+    // Skipping SHORTLISTED is refused and nothing changes
     @Test
     void appliedCannotJumpToSelected() {
         assertThrows(ApplyException.class, () -> service.updateStatus(1L, ApplicationStatus.SELECTED));
@@ -68,12 +72,14 @@ class StatusUpdateTest {
         assertFalse(student.isPlaced());
     }
 
+    // REJECTED is final
     @Test
     void finalStatusesCannotChange() {
         application.setStatus(ApplicationStatus.REJECTED);
         assertThrows(ApplyException.class, () -> service.updateStatus(1L, ApplicationStatus.SHORTLISTED));
     }
 
+    // WITHDRAWN is only for the student
     @Test
     void coordinatorCannotWithdrawForTheStudent() {
         assertThrows(ApplyException.class, () -> service.updateStatus(1L, ApplicationStatus.WITHDRAWN));

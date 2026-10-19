@@ -10,10 +10,14 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 /** JSON body of POST /eligibility/check: the student's marks plus the drive's criteria. */
+// record = a short immutable data class; Java writes the constructor and getters (cgpa(), backlogs() ...)
+// The annotations are validation rules, checked because the controller uses @Valid.
 public record EligibilityRequest(
+        // --- the student ---
         @NotNull @DecimalMin("0.0") @DecimalMax("10.0") Double cgpa,
         @NotNull @Min(0) Integer backlogs,
         @NotBlank String department,
+        // --- the drive's criteria ---
         @NotNull @DecimalMin("0.0") @DecimalMax("10.0") Double minCgpa,
         @NotNull @Min(0) Integer maxBacklogs,
         @NotEmpty List<String> allowedDepartments) {

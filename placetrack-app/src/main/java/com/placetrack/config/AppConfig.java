@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /** Shared beans, and the login check for student and coordinator pages. */
-@Configuration
+@Configuration // a class whose @Bean methods create Spring beans
 public class AppConfig implements WebMvcConfigurer {
 
     /** BCrypt hashes passwords with a random salt; the same bean checks them at login. */
@@ -17,6 +17,7 @@ public class AppConfig implements WebMvcConfigurer {
         return new BCryptPasswordEncoder();
     }
 
+    // Run LoginInterceptor before every student and coordinator page
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/student/**", "/coordinator/**");

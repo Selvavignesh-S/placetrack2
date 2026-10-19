@@ -6,8 +6,10 @@ package com.placetrack.config;
  */
 public record SessionUser(Long id, String name, String role) {
 
+    // Name of the session attribute
     public static final String KEY = "user";
 
+    // Lets templates write ${session.user.student}
     public boolean isStudent() {
         return "STUDENT".equals(role);
     }

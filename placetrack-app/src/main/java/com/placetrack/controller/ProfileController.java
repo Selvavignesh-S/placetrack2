@@ -30,6 +30,7 @@ public class ProfileController {
 
     private final StudentService studentService;
 
+    // Constructor injection: Spring passes in the beans this class needs
     public ProfileController(StudentService studentService) {
         this.studentService = studentService;
     }
@@ -50,12 +51,14 @@ public class ProfileController {
         binder.setAllowedFields("fullName", "department", "cgpa", "backlogs");
     }
 
+    // GET: profile page (the student comes from loadStudent above)
     @GetMapping
     public String form(Model model) {
         model.addAttribute("departments", Drive.DEPARTMENTS);
         return "student/profile";
     }
 
+    // POST: validate and save the edited fields
     @PostMapping
     public String save(@Valid @ModelAttribute("student") Student student, BindingResult result,
             HttpSession session, Model model, RedirectAttributes ra) {

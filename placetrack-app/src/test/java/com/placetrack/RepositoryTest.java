@@ -24,6 +24,7 @@ import com.placetrack.repository.StudentRepository;
 @DataJpaTest
 class RepositoryTest {
 
+    // Real repositories on a temporary in-memory database
     @Autowired CompanyRepository companyRepository;
     @Autowired DriveRepository driveRepository;
     @Autowired StudentRepository studentRepository;
@@ -32,6 +33,7 @@ class RepositoryTest {
     Drive open;
     Drive expired;
 
+    // Before each test: 1 company, an open and an expired drive, 2 applicants
     @BeforeEach
     void setUp() {
         Company c = companyRepository.save(new Company("Acme", "Software"));
@@ -43,24 +45,28 @@ class RepositoryTest {
         applicationRepository.save(new Application(high, open, ApplicationStatus.APPLIED));
     }
 
+    // Helper: save a CSE student with the given CGPA
     private Student student(String name, String email, String regNo, double cgpa) {
         Student s = new Student(name, email, regNo, "CSE", cgpa, 0);
         s.setPassword("hash");
         return studentRepository.save(s);
     }
 
+    // HQL findOpenDrives: deadline today counts as open
     @Test
     void openDrivesIncludeTodayAndExcludeExpired() {
         List<Drive> drives = driveRepository.findOpenDrives(LocalDate.now());
         assertEquals(List.of(open.getId()), drives.stream().map(Drive::getId).toList());
     }
 
+    // HQL join fetch query: best CGPA first
     @Test
     void applicantsAreSortedByCgpaDescending() {
         List<Application> apps = applicationRepository.findApplicantsOfDrive(open.getId());
         assertEquals(List.of("High", "Low"), apps.stream().map(a -> a.getStudent().getFullName()).toList());
     }
 
+    // HQL GROUP BY with left join: a drive with 0 applications still appears
     @Test
     void countPerDriveKeepsDrivesWithNoApplications() {
         List<Object[]> rows = applicationRepository.countApplicationsPerDrive();
@@ -70,6 +76,7 @@ class RepositoryTest {
         assertEquals(0L, rows.get(1)[2]);
     }
 
+    // Derived query existsByStudentIdAndDriveId
     @Test
     void duplicateCheckWorks() {
         Long studentId = applicationRepository.findApplicantsOfDrive(open.getId()).get(0).getStudent().getId();

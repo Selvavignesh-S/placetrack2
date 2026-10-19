@@ -19,26 +19,33 @@ import jakarta.persistence.UniqueConstraint;
         uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "drive_id"}))
 public class Application {
 
+    // Primary key, auto-numbered
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Who applied (column student_id)
     @ManyToOne(optional = false)
     private Student student;
 
+    // To which drive (column drive_id)
     @ManyToOne(optional = false)
     private Drive drive;
 
+    // Stored as text: "APPLIED", "SHORTLISTED" ...
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ApplicationStatus status;
 
+    // When the application was made
     @Column(nullable = false)
     private LocalDateTime appliedAt;
 
+    // Used by JPA
     public Application() {
     }
 
+    // New application: appliedAt is set to now
     public Application(Student student, Drive drive, ApplicationStatus status) {
         this.student = student;
         this.drive = drive;
@@ -46,6 +53,7 @@ public class Application {
         this.appliedAt = LocalDateTime.now();
     }
 
+    // --- Getters and setters (used by Spring forms, Thymeleaf and JSON) ---
     public Long getId() {
         return id;
     }

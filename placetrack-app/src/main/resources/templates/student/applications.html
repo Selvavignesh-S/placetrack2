@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<!-- Student: my applications (StudentController.applications) -->
 <head th:replace="~{fragments/layout :: head('My applications')}"></head>
 <body>
 <nav th:replace="~{fragments/layout :: nav}"></nav>
@@ -7,6 +8,7 @@
     <div th:replace="~{fragments/layout :: flash}"></div>
     <h1 class="h3 mb-3">My applications</h1>
 
+    <div class="table-responsive">
     <table class="table table-striped align-middle">
         <thead>
         <tr><th>Company</th><th>Role</th><th>Applied on</th><th>Status</th><th></th></tr>
@@ -18,6 +20,7 @@
             <td th:text="${#temporals.format(a.appliedAt, 'dd MMM yyyy, HH:mm')}">17 Oct 2026, 20:15</td>
             <td><th:block th:replace="~{fragments/layout :: statusBadge(${a.status})}"></th:block></td>
             <td class="text-end">
+                <!-- Withdraw only while APPLIED or SHORTLISTED; the service checks this again -->
                 <form method="post" th:action="@{/student/applications/{id}/withdraw(id=${a.id})}"
                       th:if="${a.status.name() == 'APPLIED' or a.status.name() == 'SHORTLISTED'}">
                     <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Withdraw this application?')">Withdraw</button>
@@ -27,6 +30,7 @@
         <tr th:if="${applications.isEmpty()}"><td colspan="5">You have not applied to any drive yet.</td></tr>
         </tbody>
     </table>
+    </div>
 </main>
 </body>
 </html>

@@ -19,11 +19,13 @@ public class DriveService {
     private final DriveRepository driveRepository;
     private final ApplicationRepository applicationRepository;
 
+    // Constructor injection: Spring passes in the beans this class needs
     public DriveService(DriveRepository driveRepository, ApplicationRepository applicationRepository) {
         this.driveRepository = driveRepository;
         this.applicationRepository = applicationRepository;
     }
 
+    // All drives, nearest deadline first (coordinator list)
     public List<Drive> findAll() {
         return driveRepository.findAll(Sort.by("deadline"));
     }
@@ -33,6 +35,7 @@ public class DriveService {
         return driveRepository.findOpenDrives(LocalDate.now());
     }
 
+    // One drive, or 404 if the id does not exist
     public Drive getById(Long id) {
         return driveRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Drive " + id + " not found"));
@@ -48,6 +51,7 @@ public class DriveService {
         return applicationRepository.countApplicationsPerDrive();
     }
 
+    // Rule: a drive that has applications cannot be deleted
     public void delete(Long id) {
         if (applicationRepository.countByDriveId(id) > 0) {
             throw new IllegalArgumentException("Students have applied to this drive, so it cannot be deleted.");

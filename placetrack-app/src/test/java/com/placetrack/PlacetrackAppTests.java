@@ -16,10 +16,12 @@ import com.placetrack.repository.UserRepository;
 @SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:apptest")
 class PlacetrackAppTests {
 
+    // Real repositories from the running test app
     @Autowired UserRepository userRepository;
     @Autowired DriveRepository driveRepository;
     @Autowired ApplicationRepository applicationRepository;
 
+    // DataSeeder filled the empty database
     @Test
     void seedDataIsLoaded() {
         assertEquals(8, userRepository.count());
@@ -27,6 +29,7 @@ class PlacetrackAppTests {
         assertEquals(4, applicationRepository.count());
     }
 
+    // Inheritance: a User query gives back a Student object
     @Test
     void userRepositoryReturnsTheRightSubclass() {
         assertInstanceOf(Student.class, userRepository.findByEmail("student1@placetrack.edu").orElseThrow());

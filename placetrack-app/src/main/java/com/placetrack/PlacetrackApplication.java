@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class PlacetrackApplication {
 
+    // Starts Spring: scans com.placetrack for beans, sets up JPA/H2 and starts Tomcat on 8080
     public static void main(String[] args) {
         SpringApplication.run(PlacetrackApplication.class, args);
     }

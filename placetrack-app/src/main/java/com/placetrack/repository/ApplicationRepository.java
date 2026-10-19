@@ -11,8 +11,10 @@ import com.placetrack.model.Application;
 /** CRUD for applications plus the HQL queries for student, applicant and dashboard pages. */
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
 
+    // Has this student already applied to this drive?
     boolean existsByStudentIdAndDriveId(Long studentId, Long driveId);
 
+    // How many applications a drive has. A drive with applications cannot be deleted.
     long countByDriveId(Long driveId);
 
     /** HQL: one student's applications, newest first. */

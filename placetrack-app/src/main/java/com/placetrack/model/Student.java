@@ -13,27 +13,33 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name = "students")
 public class Student extends User {
 
+    // College register number, unique
     @NotBlank
     @Column(nullable = false, unique = true)
     private String regNo;
 
+    // One of Drive.DEPARTMENTS, e.g. "IT"
     @NotBlank
     @Column(nullable = false)
     private String department;
 
+    // 0 to 10
     @DecimalMin("0.0")
     @DecimalMax("10.0")
     private double cgpa;
 
+    // Number of uncleared subjects, 0 or more
     @Min(0)
     private int backlogs;
 
     /** True once a coordinator marks the student SELECTED in any drive. */
     private boolean placed;
 
+    // Used by JPA and by Spring forms
     public Student() {
     }
 
+    // Used by DataSeeder and tests
     public Student(String fullName, String email, String regNo, String department, double cgpa, int backlogs) {
         super(fullName, email);
         this.regNo = regNo;
@@ -42,6 +48,7 @@ public class Student extends User {
         this.backlogs = backlogs;
     }
 
+    // --- Getters and setters (used by Spring forms, Thymeleaf and JSON) ---
     public String getRegNo() {
         return regNo;
     }

@@ -29,11 +29,13 @@ public class StudentController {
     private final DriveService driveService;
     private final ApplicationService applicationService;
 
+    // Constructor injection: Spring passes in the beans this class needs
     public StudentController(DriveService driveService, ApplicationService applicationService) {
         this.driveService = driveService;
         this.applicationService = applicationService;
     }
 
+    // GET: open drives, marking the ones already applied to
     @GetMapping("/drives")
     public String drives(@SessionAttribute(SessionUser.KEY) SessionUser user, Model model) {
         Set<Long> appliedDriveIds = applicationService.myApplications(user.id()).stream()
@@ -44,6 +46,7 @@ public class StudentController {
         return "student/drives";
     }
 
+    // GET: one drive with Check and Apply buttons
     @GetMapping("/drives/{id}")
     public String driveDetail(@PathVariable Long id, Model model) {
         model.addAttribute("drive", driveService.getById(id));
@@ -62,6 +65,7 @@ public class StudentController {
         return "student/drive-detail";
     }
 
+    // POST: apply; success → My applications, refusal → back with the reasons
     @PostMapping("/drives/{id}/apply")
     public String apply(@PathVariable Long id, @SessionAttribute(SessionUser.KEY) SessionUser user,
             RedirectAttributes ra) {
@@ -78,12 +82,14 @@ public class StudentController {
         return "redirect:/student/drives/" + id;
     }
 
+    // GET: my applications
     @GetMapping("/applications")
     public String applications(@SessionAttribute(SessionUser.KEY) SessionUser user, Model model) {
         model.addAttribute("applications", applicationService.myApplications(user.id()));
         return "student/applications";
     }
 
+    // POST: withdraw one of my applications
     @PostMapping("/applications/{id}/withdraw")
     public String withdraw(@PathVariable Long id, @SessionAttribute(SessionUser.KEY) SessionUser user,
             RedirectAttributes ra) {

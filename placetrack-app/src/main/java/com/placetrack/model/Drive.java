@@ -26,6 +26,7 @@ public class Drive {
     /** Departments shown as checkboxes and dropdowns everywhere in the app. */
     public static final List<String> DEPARTMENTS = List.of("CSE", "IT", "ECE", "EEE", "MECH", "CIVIL", "AIDS");
 
+    // Primary key, auto-numbered
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,17 +35,21 @@ public class Drive {
     @ManyToOne(optional = false)
     private Company company;
 
+    // Job title, e.g. "Cloud Engineer"
     @NotBlank
     @Column(nullable = false)
     private String roleTitle;
 
+    // Salary in lakhs per annum
     @DecimalMin("0.1")
     private double packageLpa;
 
+    // Eligibility: lowest CGPA allowed
     @DecimalMin("0.0")
     @DecimalMax("10.0")
     private double minCgpa;
 
+    // Eligibility: most backlogs allowed
     @Min(0)
     private int maxBacklogs;
 
@@ -59,9 +64,11 @@ public class Drive {
     @Column(nullable = false)
     private LocalDate deadline;
 
+    // Used by JPA and the drive form
     public Drive() {
     }
 
+    // Used by DataSeeder and tests
     public Drive(Company company, String roleTitle, double packageLpa, double minCgpa, int maxBacklogs,
             String allowedDepartments, LocalDate deadline) {
         this.company = company;
@@ -86,6 +93,7 @@ public class Drive {
         return deadline != null && !deadline.isBefore(LocalDate.now());
     }
 
+    // --- Getters and setters (used by Spring forms, Thymeleaf and JSON) ---
     public Long getId() {
         return id;
     }

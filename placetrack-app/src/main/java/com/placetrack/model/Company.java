@@ -14,26 +14,32 @@ import jakarta.validation.constraints.Size;
 @Table(name = "companies")
 public class Company {
 
+    // Primary key, auto-numbered
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Required, max 100 characters, unique in the table
     @NotBlank
     @Size(max = 100)
     @Column(nullable = false, unique = true)
     private String name;
 
+    // Optional, e.g. "Software"
     @Size(max = 100)
     private String sector;
 
+    // Used by JPA and the company form
     public Company() {
     }
 
+    // Used by DataSeeder and tests
     public Company(String name, String sector) {
         this.name = name;
         this.sector = sector;
     }
 
+    // --- Getters and setters (used by Spring forms, Thymeleaf and JSON) ---
     public Long getId() {
         return id;
     }

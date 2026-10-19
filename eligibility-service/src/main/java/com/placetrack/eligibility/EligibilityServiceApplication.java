@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class EligibilityServiceApplication {
 
+    // Starts Spring: creates the beans and the embedded Tomcat web server
     public static void main(String[] args) {
         SpringApplication.run(EligibilityServiceApplication.class, args);
     }

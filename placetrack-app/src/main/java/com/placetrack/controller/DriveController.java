@@ -25,11 +25,13 @@ public class DriveController {
     private final DriveService driveService;
     private final CompanyService companyService;
 
+    // Constructor injection: Spring passes in the beans this class needs
     public DriveController(DriveService driveService, CompanyService companyService) {
         this.driveService = driveService;
         this.companyService = companyService;
     }
 
+    // GET /coordinator/drives: list page
     @GetMapping
     public String list(Model model) {
         model.addAttribute("drives", driveService.findAll());
@@ -46,6 +48,7 @@ public class DriveController {
         return showForm(drive, model);
     }
 
+    // GET: form filled with an existing drive
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         return showForm(driveService.getById(id), model);
@@ -67,6 +70,7 @@ public class DriveController {
         return "redirect:/coordinator/drives";
     }
 
+    // POST: delete, or show why it is not allowed
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id, RedirectAttributes ra) {
         try {
@@ -78,6 +82,7 @@ public class DriveController {
         return "redirect:/coordinator/drives";
     }
 
+    // Puts the drive plus the company and department lists into the model
     private String showForm(Drive drive, Model model) {
         model.addAttribute("drive", drive);
         model.addAttribute("companies", companyService.findAll());

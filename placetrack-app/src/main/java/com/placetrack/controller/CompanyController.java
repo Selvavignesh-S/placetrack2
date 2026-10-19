@@ -23,10 +23,12 @@ public class CompanyController {
 
     private final CompanyService companyService;
 
+    // Constructor injection: Spring passes in the beans this class needs
     public CompanyController(CompanyService companyService) {
         this.companyService = companyService;
     }
 
+    // GET /coordinator/companies: list page
     @GetMapping
     public String list(Model model) {
         model.addAttribute("companies", companyService.findAll());
@@ -41,6 +43,7 @@ public class CompanyController {
         return "coordinator/company-form";
     }
 
+    // GET: form filled with an existing company
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("company", companyService.getById(id));
@@ -55,6 +58,7 @@ public class CompanyController {
     public String save(@Valid @ModelAttribute Company company, BindingResult result,
             @RequestParam(required = false) String from, Model model, RedirectAttributes ra) {
         model.addAttribute("from", from); // kept if the form is shown again with errors
+        // Validation failed: show the form again with the red messages
         if (result.hasErrors()) {
             return "coordinator/company-form";
         }
@@ -72,6 +76,7 @@ public class CompanyController {
         return "redirect:/coordinator/companies";
     }
 
+    // POST: delete, or show why it is not allowed
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id, RedirectAttributes ra) {
         try {

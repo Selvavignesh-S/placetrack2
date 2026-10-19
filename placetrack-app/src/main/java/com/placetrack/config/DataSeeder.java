@@ -22,8 +22,8 @@ import com.placetrack.repository.DriveRepository;
 import com.placetrack.repository.UserRepository;
 
 /** Fills an empty database with demo accounts, companies, drives and applications. Password: Pass@123. */
-@Component
-@Order(1)
+@Component // Spring creates it and calls run() at startup
+@Order(1)   // runs before other startup runners (the demo)
 public class DataSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
@@ -44,6 +44,7 @@ public class DataSeeder implements CommandLineRunner {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // Called once when the app starts
     @Override
     public void run(String... args) {
         if (userRepository.count() > 0) {
@@ -52,6 +53,7 @@ public class DataSeeder implements CommandLineRunner {
         // One hash shared by all demo accounts keeps startup fast; real sign-ups each get their own salt.
         String hash = passwordEncoder.encode("Pass@123");
 
+        // --- Users: 2 coordinators, 6 students ---
         Coordinator coord1 = new Coordinator("Dr. Meera Nair", "coord1@placetrack.edu", "STF001");
         Coordinator coord2 = new Coordinator("Prof. Arjun Rao", "coord2@placetrack.edu", "STF002");
         Student s1 = new Student("Aarav Kumar", "student1@placetrack.edu", "23IT001", "IT", 8.6, 0);
@@ -64,6 +66,7 @@ public class DataSeeder implements CommandLineRunner {
         List.of(coord1, coord2, s1, s2, s3, s4, s5, s6).forEach(u -> u.setPassword(hash));
         userRepository.saveAll(List.of(coord1, coord2, s1, s2, s3, s4, s5, s6));
 
+        // --- Companies (Helio has no drives, so it can be deleted) ---
         Company zephyr = new Company("Zephyr Systems", "Software");
         Company nimbus = new Company("Nimbus Cloud", "Cloud");
         Company quanta = new Company("Quanta Analytics", "Data and AI");
@@ -71,6 +74,7 @@ public class DataSeeder implements CommandLineRunner {
         Company helio = new Company("Helio Power", "Energy");
         companyRepository.saveAll(List.of(zephyr, nimbus, quanta, orion, helio));
 
+        // --- Drives: deadlines relative to today; D4 is already closed ---
         LocalDate today = LocalDate.now();
         Drive d1 = new Drive(zephyr, "Software Engineer Trainee", 4.5, 6.0, 2, "CSE,IT,ECE", today.plusDays(10));
         Drive d2 = new Drive(nimbus, "Cloud Engineer", 9.0, 7.5, 0, "IT,CSE", today.plusDays(7));
@@ -81,6 +85,7 @@ public class DataSeeder implements CommandLineRunner {
                 today.plusDays(9));
         driveRepository.saveAll(List.of(d1, d2, d3, d4, d5));
 
+        // --- Applications in different states ---
         applicationRepository.saveAll(List.of(
                 new Application(s3, d1, ApplicationStatus.SELECTED),
                 new Application(s5, d1, ApplicationStatus.SHORTLISTED),

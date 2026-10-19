@@ -30,6 +30,7 @@ public class HibernateSessionDemo implements CommandLineRunner {
         this.sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
     }
 
+    // Runs once at startup (only with the demo profile)
     @Override
     public void run(String... args) {
         System.out.println("\n===== Hibernate demo: SessionFactory -> Session -> Transaction =====");
@@ -60,6 +61,7 @@ public class HibernateSessionDemo implements CommandLineRunner {
         System.out.println("=====================================================================\n");
     }
 
+    // HQL count query run inside the given session
     private Long countCompanies(Session session) {
         return session.createQuery("select count(c) from Company c", Long.class).getSingleResult();
     }

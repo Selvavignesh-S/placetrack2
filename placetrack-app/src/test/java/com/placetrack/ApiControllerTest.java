@@ -34,6 +34,7 @@ import com.placetrack.service.DriveService;
 @WebMvcTest(ApiController.class)
 class ApiControllerTest {
 
+    // MockMvc sends fake HTTP requests; @MockitoBean replaces the real services with fakes
     @Autowired MockMvc mockMvc;
     @MockitoBean DriveService driveService;
     @MockitoBean CompanyService companyService;
@@ -41,11 +42,13 @@ class ApiControllerTest {
 
     private static final String APPLY_BODY = "{\"studentId\": 3, \"driveId\": 2}";
 
+    // Helper: a sample drive
     private Drive drive() {
         return new Drive(new Company("Nimbus Cloud", "Cloud"), "Cloud Engineer", 9, 7.5, 0, "IT,CSE",
                 LocalDate.now().plusDays(7));
     }
 
+    // GET /api/drives returns JSON
     @Test
     void listDrivesReturnsJson() throws Exception {
         when(driveService.findOpenDrives()).thenReturn(List.of(drive()));
@@ -56,6 +59,7 @@ class ApiControllerTest {
                 .andExpect(jsonPath("$[0].company.name").value("Nimbus Cloud"));
     }
 
+    // Successful apply: 201, and @JsonIgnore hides the password
     @Test
     void applyReturns201AndHidesThePasswordHash() throws Exception {
         Student student = new Student("Aarav", "a@x.edu", "R1", "IT", 8.6, 0);
@@ -69,6 +73,7 @@ class ApiControllerTest {
                 .andExpect(jsonPath("$.student.password").doesNotExist());
     }
 
+    // Refusal: 400 with the reasons
     @Test
     void ineligibleApplyReturns400WithReasons() throws Exception {
         when(applicationService.apply(3L, 2L)).thenThrow(
@@ -80,6 +85,7 @@ class ApiControllerTest {
                 .andExpect(jsonPath("$.reasons[0]").value("CGPA 7.2 is below the required 7.5"));
     }
 
+    // Eligibility service down: 503
     @Test
     void serviceDownReturns503() throws Exception {
         when(applicationService.apply(3L, 2L))
@@ -89,6 +95,7 @@ class ApiControllerTest {
                 .andExpect(status().isServiceUnavailable());
     }
 
+    // @Valid: missing driveId gives 400 with the field name
     @Test
     void missingDriveIdReturns400() throws Exception {
         mockMvc.perform(post("/api/applications").contentType(MediaType.APPLICATION_JSON).content("{\"studentId\": 3}"))
@@ -96,6 +103,7 @@ class ApiControllerTest {
                 .andExpect(jsonPath("$.fields.driveId").exists());
     }
 
+    // An id in the POST body is ignored, so nothing is overwritten
     @Test
     void createCompanyIgnoresAnIdInTheBody() throws Exception {
         when(companyService.save(argThat(c -> c.getId() == null))).thenAnswer(call -> call.getArgument(0));

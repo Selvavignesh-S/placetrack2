@@ -29,6 +29,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    // Constructor injection: Spring passes in the beans this class needs
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
@@ -42,11 +43,13 @@ public class AuthController {
         return user.isStudent() ? "redirect:/student/drives" : "redirect:/coordinator/dashboard";
     }
 
+    // GET: show the login form
     @GetMapping("/login")
     public String loginForm() {
         return "login";
     }
 
+    // POST: check email + password, store the user in the session
     @PostMapping("/login")
     public String login(@RequestParam String email, @RequestParam String password,
             HttpServletRequest request, RedirectAttributes ra) {
@@ -61,6 +64,7 @@ public class AuthController {
         return "redirect:/";
     }
 
+    // POST: forget the session (logs out)
     @PostMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
@@ -73,6 +77,7 @@ public class AuthController {
         binder.setAllowedFields("fullName", "email", "regNo", "department", "cgpa", "backlogs");
     }
 
+    // GET: empty registration form
     @GetMapping("/register")
     public String registerForm(Model model) {
         model.addAttribute("student", new Student());

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<!-- Coordinator: start page with counts (DashboardController.dashboard) -->
 <head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
 <body>
 <nav th:replace="~{fragments/layout :: nav}"></nav>
@@ -7,23 +8,24 @@
     <div th:replace="~{fragments/layout :: flash}"></div>
     <h1 class="h3 mb-3">Dashboard</h1>
 
+    <!-- Three number tiles (stat-card styles in static/css/app.css) -->
     <div class="row g-3 mb-4">
         <div class="col-sm-4">
-            <div class="card"><div class="card-body">
-                <div class="text-muted small">Students</div>
-                <div class="fs-2 fw-semibold" th:text="${totalStudents}">6</div>
+            <div class="card stat-card"><div class="card-body">
+                <div class="stat-label">Students</div>
+                <div class="stat-value" th:text="${totalStudents}">6</div>
             </div></div>
         </div>
         <div class="col-sm-4">
-            <div class="card"><div class="card-body">
-                <div class="text-muted small">Placed</div>
-                <div class="fs-2 fw-semibold" th:text="${placedStudents}">1</div>
+            <div class="card stat-card"><div class="card-body">
+                <div class="stat-label">Placed</div>
+                <div class="stat-value" th:text="${placedStudents}">1</div>
             </div></div>
         </div>
         <div class="col-sm-4">
-            <div class="card"><div class="card-body">
-                <div class="text-muted small">Open drives</div>
-                <div class="fs-2 fw-semibold" th:text="${openDrives}">4</div>
+            <div class="card stat-card"><div class="card-body">
+                <div class="stat-label">Open drives</div>
+                <div class="stat-value" th:text="${openDrives}">4</div>
             </div></div>
         </div>
     </div>

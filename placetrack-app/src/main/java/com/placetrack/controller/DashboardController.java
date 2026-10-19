@@ -14,11 +14,13 @@ public class DashboardController {
     private final StudentService studentService;
     private final DriveService driveService;
 
+    // Constructor injection: Spring passes in the beans this class needs
     public DashboardController(StudentService studentService, DriveService driveService) {
         this.studentService = studentService;
         this.driveService = driveService;
     }
 
+    // GET: numbers and the applications-per-drive table
     @GetMapping("/coordinator/dashboard")
     public String dashboard(Model model) {
         model.addAttribute("totalStudents", studentService.countStudents());

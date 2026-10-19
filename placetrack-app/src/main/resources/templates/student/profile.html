@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<!-- Student: own profile (ProfileController.form) -->
 <head th:replace="~{fragments/layout :: head('My profile')}"></head>
 <body>
 <nav th:replace="~{fragments/layout :: nav}"></nav>
@@ -7,6 +8,7 @@
     <div th:replace="~{fragments/layout :: flash}"></div>
     <h1 class="h3 mb-3">My profile</h1>
 
+    <!-- Read-only details: these cannot be changed here -->
     <table class="table table-sm mb-4">
         <tr><th>Email</th><td th:text="${student.email}">student1@placetrack.edu</td></tr>
         <tr><th>Register number</th><td th:text="${student.regNo}">23IT001</td></tr>
@@ -19,6 +21,7 @@
         </tr>
     </table>
 
+    <!-- Editable fields; only these four are bound (see ProfileController @InitBinder) -->
     <form method="post" th:action="@{/student/profile}" th:object="${student}">
         <div class="mb-3">
             <label class="form-label">Full name</label>

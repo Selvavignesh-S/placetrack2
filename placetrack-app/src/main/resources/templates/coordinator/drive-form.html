@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<!-- Coordinator: create / edit a drive (DriveController.newForm, editForm) -->
 <head th:replace="~{fragments/layout :: head('Drive')}"></head>
 <body>
 <nav th:replace="~{fragments/layout :: nav}"></nav>
@@ -8,6 +9,7 @@
     <h1 class="h3 mb-3" th:text="${drive.id == null} ? 'Create drive' : 'Edit drive'">Drive</h1>
 
     <form method="post" th:action="@{/coordinator/drives}" th:object="${drive}">
+        <!-- Empty id = create, filled id = update -->
         <input type="hidden" th:field="*{id}">
 
         <div class="mb-3">

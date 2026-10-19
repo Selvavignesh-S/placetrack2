@@ -18,6 +18,7 @@ public class AuthService {
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // Constructor injection: Spring passes in the beans this class needs
     public AuthService(UserRepository userRepository, StudentRepository studentRepository,
             PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -33,6 +34,7 @@ public class AuthService {
                         user instanceof Student ? "STUDENT" : "COORDINATOR"));
     }
 
+    // Checks the password and duplicates, hashes the password, saves the new student
     public void register(Student student, String rawPassword) {
         if (rawPassword == null || rawPassword.length() < 6) {
             throw new IllegalArgumentException("Password must be at least 6 characters");
@@ -43,7 +45,7 @@ public class AuthService {
         if (studentRepository.existsByRegNo(student.getRegNo())) {
             throw new IllegalArgumentException("This register number is already registered");
         }
-        student.setPassword(passwordEncoder.encode(rawPassword));
+        student.setPassword(passwordEncoder.encode(rawPassword)); // store only the BCrypt hash
         studentRepository.save(student);
     }
 }

@@ -16,9 +16,11 @@ import org.springframework.test.web.servlet.MockMvc;
 @Import(EligibilityService.class)
 class EligibilityControllerTest {
 
+    // MockMvc sends fake HTTP requests to the controller
     @Autowired
     private MockMvc mockMvc;
 
+    // Valid JSON: 200 and the two reasons
     @Test
     void validRequestReturnsReasons() throws Exception {
         String body = """
@@ -31,6 +33,7 @@ class EligibilityControllerTest {
                 .andExpect(jsonPath("$.reasons.length()").value(2));
     }
 
+    // cgpa missing: @Valid rejects it with 400 Bad Request
     @Test
     void missingFieldReturns400() throws Exception {
         String body = """

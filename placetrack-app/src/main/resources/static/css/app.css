@@ -1,0 +1,245 @@
+/*
+ * PlaceTrack theme: Bootstrap 5 with our own colours, font and spacing.
+ * Loaded after Bootstrap in templates/fragments/layout.html, so these rules win.
+ * Most rules only change Bootstrap's CSS variables (--bs-...), so components keep working.
+ */
+
+:root {
+    --pt-primary: #4f46e5;       /* indigo */
+    --pt-primary-dark: #4338ca;
+    --pt-ink: #0f172a;           /* headings, navbar */
+    --pt-muted: #64748b;
+    --pt-border: #e2e8f0;
+    --pt-bg: #f4f6fb;            /* page background */
+
+    --bs-body-font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --bs-body-bg: var(--pt-bg);
+    --bs-body-color: #1e293b;
+    --bs-primary: #4f46e5;
+    --bs-primary-rgb: 79, 70, 229;
+    --bs-link-color: #4f46e5;
+    --bs-link-color-rgb: 79, 70, 229;
+    --bs-link-hover-color: #4338ca;
+    --bs-link-hover-color-rgb: 67, 56, 202;
+    --bs-border-color: var(--pt-border);
+    --bs-border-radius: .5rem;
+    --bs-border-radius-sm: .375rem;
+    --bs-border-radius-lg: .75rem;
+}
+
+main {
+    padding-bottom: 3rem;
+}
+
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5 {
+    color: var(--pt-ink);
+    font-weight: 700;
+    letter-spacing: -.015em;
+}
+
+/* ---------- Navbar ---------- */
+.app-navbar {
+    background: var(--pt-ink);
+    padding: .7rem 0;
+    --bs-navbar-color: #cbd5e1;
+    --bs-navbar-hover-color: #fff;
+    --bs-navbar-active-color: #fff;
+    --bs-navbar-brand-color: #fff;
+    --bs-navbar-brand-hover-color: #fff;
+    --bs-navbar-nav-link-padding-x: .75rem;
+}
+
+.app-navbar .container {
+    flex-wrap: wrap;          /* links wrap instead of overflowing on phones */
+    row-gap: .5rem;
+}
+
+.app-navbar .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+}
+
+/* Small logo square in front of "PlaceTrack" */
+.app-navbar .navbar-brand::before {
+    content: "";
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: .45rem;
+    background: linear-gradient(135deg, #a5b4fc, #4f46e5);
+}
+
+.app-navbar .nav-link {
+    font-weight: 500;
+    border-radius: .375rem;
+}
+
+.app-navbar .nav-link:hover {
+    background: rgba(255, 255, 255, .08);
+}
+
+.app-navbar .navbar-text {
+    color: #e2e8f0;
+    font-weight: 500;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+    font-weight: 500;
+}
+
+.btn-primary {
+    --bs-btn-bg: #4f46e5;
+    --bs-btn-border-color: #4f46e5;
+    --bs-btn-hover-bg: #4338ca;
+    --bs-btn-hover-border-color: #4338ca;
+    --bs-btn-active-bg: #3730a3;
+    --bs-btn-active-border-color: #3730a3;
+    --bs-btn-disabled-bg: #4f46e5;
+    --bs-btn-disabled-border-color: #4f46e5;
+    --bs-btn-focus-shadow-rgb: 79, 70, 229;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: #4f46e5;
+    --bs-btn-border-color: #c7d2fe;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #4f46e5;
+    --bs-btn-hover-border-color: #4f46e5;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #4338ca;
+    --bs-btn-active-border-color: #4338ca;
+    --bs-btn-focus-shadow-rgb: 79, 70, 229;
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: #334155;
+    --bs-btn-border-color: #cbd5e1;
+    --bs-btn-hover-color: #0f172a;
+    --bs-btn-hover-bg: #f1f5f9;
+    --bs-btn-hover-border-color: #94a3b8;
+    --bs-btn-active-color: #0f172a;
+    --bs-btn-active-bg: #e2e8f0;
+    --bs-btn-active-border-color: #94a3b8;
+}
+
+/* ---------- Forms ---------- */
+.form-label {
+    font-weight: 500;
+    font-size: .9rem;
+    color: #334155;
+}
+
+.form-control,
+.form-select {
+    background-color: #fff;   /* Bootstrap would use the grey page background */
+    border-color: #cbd5e1;
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 .2rem rgba(79, 70, 229, .15);
+}
+
+.form-check-input:checked {
+    background-color: #4f46e5;
+    border-color: #4f46e5;
+}
+
+/* ---------- Cards and tables ---------- */
+.card,
+.table-responsive {
+    background: #fff;
+    border: 1px solid var(--pt-border);
+    border-radius: .75rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 1px 3px rgba(15, 23, 42, .06);
+}
+
+.table-responsive {
+    margin-bottom: 1rem;
+}
+
+.table-responsive > .table {
+    margin-bottom: 0;
+}
+
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: #f8fafc;
+    vertical-align: middle;
+}
+
+.table > :not(caption) > * > * {
+    padding: .8rem 1rem;
+}
+
+.table-sm > :not(caption) > * > * {
+    padding: .45rem .5rem;
+}
+
+.table > thead th {
+    background: #f8fafc;
+    color: var(--pt-muted);
+    font-size: .72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    white-space: nowrap;
+}
+
+/* ---------- Badges and alerts ---------- */
+.badge {
+    font-weight: 600;
+    letter-spacing: .02em;
+    padding: .4em .7em;
+    border-radius: 999px;
+}
+
+.alert {
+    border-width: 0 0 0 4px;   /* coloured bar on the left instead of a full border */
+    border-radius: .6rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+}
+
+/* ---------- Login and register ---------- */
+.auth-wrap {
+    max-width: 440px;
+    margin: 2.5rem auto;
+}
+
+.auth-wrap.wide {
+    max-width: 640px;
+}
+
+.auth-wrap .card-body {
+    padding: 2rem;
+}
+
+.auth-subtitle {
+    color: var(--pt-muted);
+    margin-bottom: 1.5rem;
+}
+
+/* ---------- Dashboard number tiles ---------- */
+.stat-card {
+    border-top: 3px solid var(--pt-primary);
+}
+
+.stat-label {
+    color: var(--pt-muted);
+    font-size: .75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--pt-ink);
+    line-height: 1.2;
+}
