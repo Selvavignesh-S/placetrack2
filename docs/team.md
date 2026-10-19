@@ -4,16 +4,19 @@ Fill this in. The report title page and the submission file names need it.
 
 | Field | Value |
 | --- | --- |
-| Team number | TODO |
+| Team number | [No team number] |
 | Project title | PlaceTrack: Campus Placement Drive Tracker |
-| Course | IT23502 Web Programming, Mini Project |
-| GitHub repository | TODO |
+| Course | Web Programming |
+| Course code | IT23502 |
+| Department | Information Science and Technology |
+| Semester | 5th semester |
+| GitHub repository | https://github.com/Selvavignesh-S/placetrack2 |
 
 | Role | Name | Register number | Module |
 | --- | --- | --- | --- |
-| M1 | TODO | TODO | Data layer, inheritance, HQL, Session demo, eligibility microservice, company and drive pages |
-| M2 | TODO | TODO | Login and roles, apply flow, eligibility client, @Transactional, AOP, DI demo |
-| M3 | TODO | TODO | Applicants and status changes, profile, dashboard, REST API, Postman, README, report |
+| M1 | Selvavignesh S | 2024115090 | Data layer, inheritance, HQL, Session demo, eligibility microservice, company and drive pages |
+| M2 | Prakash B | 2024115074 | Login and roles, apply flow, eligibility client, @Transactional, AOP, DI demo |
+| M3 | Krishna K | 2024115100 | Applicants and status changes, profile, dashboard, REST API, Postman, README, report |
 
 Submission file names (replace TeamNo):
 - `TeamNo_PlaceTrack_Report.pdf`
