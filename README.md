@@ -69,7 +69,7 @@ The detailed plan for every member is in [`docs/PLAN.md`](docs/PLAN.md).
 - **placetrack-app** is the main website. It owns all the data and pages.
 - **eligibility-service** is a small independent microservice. The two share no Java code, only a JSON contract.
 
-**Tech stack:** Java 17, Spring Boot 3.5.16, Spring MVC, Thymeleaf, Bootstrap 5 (CDN), Spring Data JPA, Hibernate,
+**Tech stack:** Java 25 LTS, Spring Boot 3.5.16, Spring MVC, Thymeleaf, Bootstrap 5 (CDN), Spring Data JPA, Hibernate,
 H2 database, Bean Validation, Spring AOP, BCrypt (`spring-security-crypto`), JUnit 5, Mockito, Maven (wrapper included).
 
 ---
@@ -81,7 +81,7 @@ Maven wrapper (`mvnw`) that downloads Maven by itself, and the H2 database comes
 
 | Tool | Needed? | Version | Check it |
 | --- | --- | --- | --- |
-| **JDK** (Java Development Kit) | ✅ Required | 17 or newer (17, 21 …) | `java -version` |
+| **JDK** (Java Development Kit) | ✅ Required | 25 or newer | `java -version` |
 | **Git** | ✅ Required | any | `git --version` |
 | Internet (first build only) | ✅ Required once | – | Downloads Maven and libraries (~150 MB) into `~/.m2` |
 | Spring Tool Suite 4 **or** IntelliJ IDEA | Recommended | latest | The spec asks for the demo to run in **STS** |
@@ -90,11 +90,11 @@ Maven wrapper (`mvnw`) that downloads Maven by itself, and the H2 database comes
 
 ### Install a JDK
 
-- **Windows:** download **Eclipse Temurin 17 or 21** (`.msi`) from https://adoptium.net and, in the installer, enable
+- **Windows:** download **Eclipse Temurin 25** (`.msi`) from https://adoptium.net and, in the installer, enable
   **"Set JAVA_HOME variable"** and **"Add to PATH"**.
-- **macOS:** `brew install --cask temurin@21` (or the `.pkg` from https://adoptium.net).
-- **Ubuntu / Debian:** `sudo apt install openjdk-21-jdk`
-- **Arch / CachyOS / Manjaro:** `sudo pacman -S jdk21-openjdk`
+- **macOS:** `brew install --cask temurin@25` (or the `.pkg` from https://adoptium.net).
+- **Ubuntu / Debian:** `sudo apt install openjdk-25-jdk`
+- **Arch / CachyOS / Manjaro:** `sudo pacman -S jdk-openjdk`
 
 Open a **new** terminal afterwards and check:
 
@@ -102,7 +102,7 @@ Open a **new** terminal afterwards and check:
 java -version
 ```
 
-It must say version 17 or higher. A JRE alone is not enough; it must be a JDK.
+It must say version 25 or higher. A JRE alone is not enough; it must be a JDK.
 
 ### Install an IDE (optional but recommended)
 
@@ -185,7 +185,7 @@ Each app is ready when its log shows `Started ...Application in X seconds`.
 1. **File → Open** and choose the cloned `placetrack2` folder. Click **Trust Project** if asked.
 2. In the Project panel, right-click `eligibility-service/pom.xml` → **Add as Maven Project**. Do the same for
    `placetrack-app/pom.xml`. Wait for the indexing and download to finish.
-3. **File → Project Structure → Project → SDK:** choose your JDK (17 or newer).
+3. **File → Project Structure → Project → SDK:** choose your JDK (25 or newer).
 4. Open `eligibility-service/src/main/java/com/placetrack/eligibility/EligibilityServiceApplication.java` and click
    the green ▶ next to `main`.
 5. Open `placetrack-app/src/main/java/com/placetrack/PlacetrackApplication.java` and click ▶.
@@ -575,7 +575,7 @@ Override any property when starting, without editing files:
 | `Port 8080 was already in use` (or 8082) | Another copy is still running. Stop it in the IDE, or find it: Linux/macOS `ss -ltnp \| grep 8080` (or `lsof -i :8080`) then `kill <pid>`; Windows `netstat -ano \| findstr :8080` then `taskkill /PID <pid> /F` |
 | `./mvnw: Permission denied` | `chmod +x mvnw` |
 | `JAVA_HOME is not set` / `java: command not found` | Install a JDK (section 3) and open a new terminal. Windows: set `JAVA_HOME` to the JDK folder in *Environment Variables* |
-| `release version 17 not supported` | Your JDK is older than 17. Install 17 or newer and select it in the IDE |
+| `release version 25 not supported` | Your JDK is older than 25. Install 25 or newer and select it in the IDE |
 | Every Apply / Check says "Eligibility check unavailable, try later" | The eligibility service is not running. Start it and check http://localhost:8082/eligibility/ping |
 | H2 console: "Database not found" | Wrong `data/` folder: see section 7 and use the full path |
 | H2 console: "Database may be already in use" | Another process holds the file (for example a second copy of the app). Stop it |

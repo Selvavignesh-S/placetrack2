@@ -18,9 +18,9 @@
     <name>eligibility-service</name>
     <description>PlaceTrack eligibility microservice (port 8082, no database)</description>
 
-    <!-- Compile for Java 17 -->
+    <!-- Compile for Java 25 -->
     <properties>
-        <java.version>17</java.version>
+        <java.version>25</java.version>
     </properties>
 
     <dependencies>

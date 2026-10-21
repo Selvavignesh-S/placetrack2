@@ -99,7 +99,7 @@ JPA entities that use JOINED inheritance for users and HQL queries for listings 
 
 | Thing | Choice | Note |
 | --- | --- | --- |
-| Java | 17 (JDK 17 or newer installed) | `java.version` is 17 in both poms |
+| Java | 25 LTS (JDK 25 or newer installed) | `java.version` is 25 in both poms |
 | Spring Boot | 3.5.16 in both projects | 3.x line: most tutorials match it; imports use `jakarta.*` |
 | Build | Maven via wrapper `./mvnw` (Windows: `mvnw.cmd`) | Nobody needs to install Maven |
 | IDE | Spring Tool Suite 4 | File → Import → Existing Maven Projects |
@@ -249,7 +249,7 @@ Missing or invalid field → `400` (Spring's default error body). `GET /eligibil
 
 ## 4. Prerequisites (do these first, all three members)
 
-- [ ] **JDK 17 or newer** on every laptop: `java -version`. (Maven is NOT needed: use `./mvnw`.)
+- [ ] **JDK 25 or newer** on every laptop: `java -version`. (Maven is NOT needed: use `./mvnw`.)
 - [ ] **Spring Tool Suite 4** installed (spec requires STS for running the app).
 - [ ] **Git** installed, and one **GitHub repo** created by one member with the other two added as collaborators.
 - [ ] **Postman** installed (M3 needs it; others for testing).
@@ -294,7 +294,7 @@ Everything below exists in the repo. M1's job now is to **learn it line by line*
 report chapters. Steps are listed in build order so M1 can explain how it was made.
 
 ### 6.1 Project skeletons
-- `placetrack-app/pom.xml`: parent `spring-boot-starter-parent 3.5.16`, Java 17. Dependencies: `web`, `thymeleaf`,
+- `placetrack-app/pom.xml`: parent `spring-boot-starter-parent 3.5.16`, Java 25. Dependencies: `web`, `thymeleaf`,
   `data-jpa`, `validation`, `aop` (for M2), `h2` (runtime), `spring-security-crypto` (BCrypt), `test`.
 - `eligibility-service/pom.xml`: `web`, `validation`, `test`. No database.
 - `application.properties` (main app): port 8080, H2 file URL `jdbc:h2:file:./data/placetrack`, `ddl-auto=update`

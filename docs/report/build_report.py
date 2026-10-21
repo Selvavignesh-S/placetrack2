@@ -359,7 +359,7 @@ def build_story(team_no, github, members, info):
     s += [P("5. Technology Stack", h1)]
     s += table([
         ["Area", "Choice", "Purpose"],
-        ["Language", "Java 17 (built with JDK 21)", "Language level used by both projects"],
+        ["Language", "Java 25 (tested with JDK 26)", "Language level used by both projects"],
         ["Framework", "Spring Boot 3.5.16", "Auto-configuration, embedded Tomcat server"],
         ["Web", "Spring MVC, Thymeleaf, Bootstrap 5", "Server-rendered HTML pages"],
         ["Persistence", "Spring Data JPA, Hibernate 6", "ORM, repositories, HQL"],
@@ -767,7 +767,7 @@ Response: { "eligible": false,
 
     # ---------- 12 how to run
     s += [P("12. How to Run the Application Locally", h1),
-          P("Requirements: JDK 17 or newer and Git. Maven and the database do not need to be installed. Full "
+          P("Requirements: JDK 25 or newer and Git. Maven and the database do not need to be installed. Full "
             "instructions are in README.md in the repository.")]
     s += code(f"""
 git clone {github}.git
