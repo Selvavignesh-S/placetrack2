@@ -1,5 +1,6 @@
 package com.placetrack.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -48,17 +49,10 @@ public class ApplicationService {
         Student student = getStudent(studentId);
         Drive drive = driveService.getById(driveId);
 
-        // Rule: placed students cannot apply again
-        if (student.isPlaced()) {
-            throw new ApplyException("You are already placed, so you cannot apply to more drives");
-        }
-        // Rule: deadline must not have passed
-        if (!drive.isOpen()) {
-            throw new ApplyException("The deadline for this drive has passed");
-        }
-        // Rule: only one application per drive
-        if (applicationRepository.existsByStudentIdAndDriveId(studentId, driveId)) {
-            throw new ApplyException("You have already applied to this drive");
+        // Rules checked in our database first: placed, deadline, one application per drive
+        List<String> blockers = applyBlockers(student, drive, studentId, driveId);
+        if (!blockers.isEmpty()) {
+            throw new ApplyException(blockers.get(0)); // first failing rule; the service is never called
         }
 
         // Rules: CGPA, backlogs, department (asked from the eligibility microservice)
@@ -76,9 +70,21 @@ public class ApplicationService {
         }
     }
 
-    /** "Am I eligible?" without applying. Saves nothing. */
+    /**
+     * "Am I eligible?" without applying. Saves nothing.
+     * Runs the same rules as apply() first, so Check can never say "eligible" where Apply
+     * would refuse (placed, deadline passed, already applied); the eligibility service
+     * (CGPA, backlogs, department) is asked only when none of them blocks the application.
+     */
     public EligibilityResult checkEligibility(Long studentId, Long driveId) {
-        return eligibilityClient.check(getStudent(studentId), driveService.getById(driveId));
+        Student student = getStudent(studentId);
+        Drive drive = driveService.getById(driveId);
+
+        List<String> blockers = applyBlockers(student, drive, studentId, driveId);
+        if (!blockers.isEmpty()) {
+            return new EligibilityResult(false, blockers);
+        }
+        return eligibilityClient.check(student, drive);
     }
 
     // One student's applications, newest first
@@ -131,6 +137,26 @@ public class ApplicationService {
             application.getStudent().setPlaced(true);
         }
         return application; // saved at commit by dirty checking
+    }
+
+    /**
+     * The rules checked before the eligibility service, in apply()'s order:
+     * placed students cannot apply, the deadline must not have passed, one application
+     * per drive. Empty means "keep going". Shared by apply() and checkEligibility()
+     * so Check and Apply can never give different answers.
+     */
+    private List<String> applyBlockers(Student student, Drive drive, Long studentId, Long driveId) {
+        List<String> blockers = new ArrayList<>();
+        if (student.isPlaced()) {
+            blockers.add("You are already placed, so you cannot apply to more drives");
+        }
+        if (!drive.isOpen()) {
+            blockers.add("The deadline for this drive has passed");
+        }
+        if (applicationRepository.existsByStudentIdAndDriveId(studentId, driveId)) {
+            blockers.add("You have already applied to this drive");
+        }
+        return blockers;
     }
 
     // Load a student, or 404 if the id does not exist

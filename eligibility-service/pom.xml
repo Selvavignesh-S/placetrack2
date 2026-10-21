@@ -16,7 +16,7 @@
     <artifactId>eligibility-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>eligibility-service</name>
-    <description>PlaceTrack eligibility microservice (port 8081, no database)</description>
+    <description>PlaceTrack eligibility microservice (port 8082, no database)</description>
 
     <!-- Compile for Java 17 -->
     <properties>

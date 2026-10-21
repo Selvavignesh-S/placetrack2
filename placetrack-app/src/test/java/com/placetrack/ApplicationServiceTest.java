@@ -1,7 +1,9 @@
 package com.placetrack;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -33,7 +35,7 @@ import com.placetrack.repository.StudentRepository;
 import com.placetrack.service.ApplicationService;
 import com.placetrack.service.DriveService;
 
-/** Unit tests of the apply and withdraw rules. Mockito replaces the database and the eligibility service. */
+/** Unit tests of the apply, check-eligibility and withdraw rules. Mockito replaces the database and the eligibility service. */
 @ExtendWith(MockitoExtension.class)
 class ApplicationServiceTest {
 
@@ -127,6 +129,69 @@ class ApplicationServiceTest {
 
         assertThrows(EligibilityUnavailableException.class, () -> service.apply(1L, 10L));
         verify(applicationRepository, never()).save(any());
+    }
+
+    // --- checkEligibility: must agree with apply(), so the same rules run first ---
+
+    // Nothing blocks: the answer comes from the eligibility service
+    @Test
+    void checkAsksTheEligibilityServiceWhenNothingBlocks() {
+        studentAndDriveExist();
+        when(eligibilityClient.check(student, drive)).thenReturn(new EligibilityResult(true, List.of()));
+
+        EligibilityResult result = service.checkEligibility(1L, 10L);
+
+        assertTrue(result.eligible());
+        verify(applicationRepository, never()).save(any());
+    }
+
+    // Closed drive: reported as the reason, the service is never asked
+    @Test
+    void checkOnClosedDriveReportsTheDeadlineWithoutCallingTheService() {
+        studentAndDriveExist();
+        drive.setDeadline(LocalDate.now().minusDays(1));
+
+        EligibilityResult result = service.checkEligibility(1L, 10L);
+
+        assertFalse(result.eligible());
+        assertEquals(List.of("The deadline for this drive has passed"), result.reasons());
+        verify(eligibilityClient, never()).check(any(), any());
+    }
+
+    // Placed student: refused exactly like apply()
+    @Test
+    void checkForPlacedStudentReportsPlacementWithoutCallingTheService() {
+        studentAndDriveExist();
+        student.setPlaced(true);
+
+        EligibilityResult result = service.checkEligibility(1L, 10L);
+
+        assertFalse(result.eligible());
+        assertEquals(List.of("You are already placed, so you cannot apply to more drives"), result.reasons());
+        verify(eligibilityClient, never()).check(any(), any());
+    }
+
+    // Already applied: refused exactly like apply()
+    @Test
+    void checkAfterApplyingSaysAlreadyAppliedWithoutCallingTheService() {
+        studentAndDriveExist();
+        when(applicationRepository.existsByStudentIdAndDriveId(1L, 10L)).thenReturn(true);
+
+        EligibilityResult result = service.checkEligibility(1L, 10L);
+
+        assertFalse(result.eligible());
+        assertEquals(List.of("You have already applied to this drive"), result.reasons());
+        verify(eligibilityClient, never()).check(any(), any());
+    }
+
+    // Eligibility service down: check reports the outage instead of a wrong "eligible"
+    @Test
+    void checkPropagatesTheOutageWhenNothingBlocks() {
+        studentAndDriveExist();
+        when(eligibilityClient.check(student, drive))
+            .thenThrow(new EligibilityUnavailableException(new RuntimeException("connection refused")));
+
+        assertThrows(EligibilityUnavailableException.class, () -> service.checkEligibility(1L, 10L));
     }
 
     // Withdraw allowed only while APPLIED or SHORTLISTED

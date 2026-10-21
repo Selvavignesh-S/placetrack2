@@ -3,7 +3,7 @@ package com.placetrack.eligibility;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/** Starts the eligibility microservice on port 8081 (see application.properties). */
+/** Starts the eligibility microservice on port 8082 (see application.properties). */
 @SpringBootApplication
 public class EligibilityServiceApplication {
 

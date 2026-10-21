@@ -89,7 +89,7 @@ JPA entities that use JOINED inheritance for users and HQL queries for listings 
 | B. `@Transactional` | `ApplicationService.apply`, `updateStatus` (SELECTED + placed) | M2, M3 |
 | C. REST APIs, GET + POST, Postman | `ApiController` (5 endpoints) + Postman collection | M3 |
 | C. Web services, REST vs SOAP | Report chapter | M3 |
-| D. Monolith vs microservices, 2nd service, different ports | `eligibility-service` on 8081, called from 8080 | M1 (service), M2 (client) |
+| D. Monolith vs microservices, 2nd service, different ports | `eligibility-service` on 8082, called from 8080 | M1 (service), M2 (client) |
 | D. Spring Cloud purpose + one feature | Report: OpenFeign would replace our `RestTemplate` client; Resilience4j circuit breaker for UC24 | M3 |
 | E. Git, GitHub, Maven | Repo, branches, `./mvnw` builds | All, M3 writes it up |
 
@@ -134,7 +134,7 @@ Java Mini project./                 (the GitHub repo root)
     src/main/resources/
       application.properties
       templates/fragments/layout.html, coordinator/*.html, student/*.html, login.html ...
-  eligibility-service/              2nd microservice, port 8081, package com.placetrack.eligibility
+  eligibility-service/              2nd microservice, port 8082, package com.placetrack.eligibility
     EligibilityServiceApplication, EligibilityController, EligibilityService,
     EligibilityRequest, EligibilityResponse                                                    (M1)
   postman/PlaceTrack.postman_collection.json                                                   (M3)
@@ -199,7 +199,7 @@ Departments are plain strings from this fixed list: `CSE, IT, ECE, EEE, MECH, CI
 | R9 | a drive with applications cannot be deleted | `DriveService.delete` (M1) |
 | R10 | a company with drives cannot be deleted; company names are unique | `CompanyService` (M1) |
 
-### 3.4 Eligibility service JSON (port 8081)
+### 3.4 Eligibility service JSON (port 8082)
 
 `POST /eligibility/check`
 
@@ -254,7 +254,7 @@ Missing or invalid field → `400` (Spring's default error body). `GET /eligibil
 - [ ] **Git** installed, and one **GitHub repo** created by one member with the other two added as collaborators.
 - [ ] **Postman** installed (M3 needs it; others for testing).
 - [ ] Internet on the first build (Maven downloads Spring once, ~150 MB).
-- [ ] Ports **8080** and **8081** free.
+- [ ] Ports **8080** and **8082** free.
 - [ ] Team number, names and register numbers written in `docs/team.md` (report and file names need them).
 
 ---
@@ -299,8 +299,8 @@ report chapters. Steps are listed in build order so M1 can explain how it was ma
 - `eligibility-service/pom.xml`: `web`, `validation`, `test`. No database.
 - `application.properties` (main app): port 8080, H2 file URL `jdbc:h2:file:./data/placetrack`, `ddl-auto=update`
   (Hibernate creates/updates tables from the entities), `show-sql=true` (prints SQL for learning), H2 console on,
-  `eligibility.url=http://localhost:8081`.
-- `eligibility-service/application.properties`: `server.port=8081`.
+  `eligibility.url=http://localhost:8082`.
+- `eligibility-service/application.properties`: `server.port=8082`.
 
 ### 6.2 Entities (`model/`)
 - `User`: `@Entity @Table(name="users") @Inheritance(strategy = InheritanceType.JOINED)`, `abstract`.
@@ -625,7 +625,7 @@ the profile uses a `@ModelAttribute` loader plus an `@InitBinder` allow-list; `P
    take it from the session or a token (JWT). We left it out to keep the API easy to test.
 
 ### 8.5 Postman (≈ 60 min)
-Environment: `baseUrl = http://localhost:8080`, `eligUrl = http://localhost:8081`. Collection
+Environment: `baseUrl = http://localhost:8080`, `eligUrl = http://localhost:8082`. Collection
 `postman/PlaceTrack.postman_collection.json`, each request with a Tests tab checking the status code:
 1. `GET {{eligUrl}}/eligibility/ping` → 200
 2. `POST {{eligUrl}}/eligibility/check` eligible body → 200, `eligible == true`
@@ -648,7 +648,7 @@ Run the collection with the Runner on a fresh DB and screenshot the summary.
   (1. `cd eligibility-service && ./mvnw spring-boot:run`, 2. `cd placetrack-app && ./mvnw spring-boot:run`,
   3. open `http://localhost:8080`), seeded logins, H2 console URL, how to reset data, how to run tests, Postman import.
 - Architecture diagram `docs/report/architecture.png`: Browser/Postman → placetrack-app (controllers → services →
-  repositories → H2; `EligibilityClient` → eligibility-service :8081).
+  repositories → H2; `EligibilityClient` → eligibility-service :8082).
 - Concept notes for the report: REST vs SOAP table (JSON vs XML envelope, no contract vs WSDL, light vs heavy);
   monolith vs microservices table; Spring Cloud (OpenFeign, Eureka, Gateway, Config Server, Resilience4j: which one
   would replace our client and our hand-written timeout handling); DevOps (CI/CD, tools table: Git, GitHub, Maven used;
@@ -711,12 +711,12 @@ Expected rows after first start: users 8, students 6, coordinators 2, companies 
 | S13 | coord1 deletes Zephyr Systems / deletes D1 | Both refused (has drives / has applications) | UC13 |
 | S14 | coord1 deletes Helio Power | Deleted | UC13 |
 | S15 | Postman `GET /api/drives`, `POST /api/applications` | 200 list; 201 or 400 with reasons | UC20, UC21 |
-| S16 | Postman `POST :8081/eligibility/check` | Same reasons as the website | UC23 |
+| S16 | Postman `POST :8082/eligibility/check` | Same reasons as the website | UC23 |
 
 ### Demo script (≈ 10 min)
-1. **M3**: architecture diagram, both services running on 8080 and 8081.
+1. **M3**: architecture diagram, both services running on 8080 and 8082.
 2. **M1**: log in as coord1, add a company, create a drive; show H2 console with `users` + `students` tables; run the
-   Session demo output; Postman call to `:8081/eligibility/check`.
+   Session demo output; Postman call to `:8082/eligibility/check`.
 3. **M2**: student2 checks D2 and sees reasons (S2); student1 applies (S1); show the `AUDIT` console lines; stop the
    eligibility service and apply (S7).
 4. **M3**: coord1 shortlists then selects (S11); Postman GET + POST; GitHub commit history.

@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "58e669c6-7bc1-4b6b-8a99-0a1efbd714ba",
     "name": "PlaceTrack",
-    "description": "PlaceTrack API tests. 00: eligibility microservice (port 8081). 01-02: main app REST API (port 8080). Run 00-02 with the Collection Runner on fresh seed data. 03 is run by hand with the eligibility service stopped.",
+    "description": "PlaceTrack API tests. 00: eligibility microservice (port 8082). 01-02: main app REST API (port 8080). Run 00-02 with the Collection Runner on fresh seed data. 03 is run by hand with the eligibility service stopped.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [

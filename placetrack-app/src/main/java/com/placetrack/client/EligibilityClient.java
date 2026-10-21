@@ -13,7 +13,7 @@ import com.placetrack.exception.EligibilityUnavailableException;
 import com.placetrack.model.Drive;
 import com.placetrack.model.Student;
 
-/** Calls the eligibility microservice (port 8081) over REST: POST /eligibility/check. */
+/** Calls the eligibility microservice (port 8082) over REST: POST /eligibility/check. */
 @Component
 public class EligibilityClient {
 

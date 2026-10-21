@@ -59,7 +59,7 @@ The detailed plan for every member is in [`docs/PLAN.md`](docs/PLAN.md).
 └────────────────────────────────────────┼────────────────────────────────────────────┘
                                          │  POST /eligibility/check   (JSON)
                                          ▼
-                    ┌──────── eligibility-service  (port 8081) ────────┐
+                    ┌──────── eligibility-service  (port 8082) ────────┐
                     │  EligibilityController ─► EligibilityService      │
                     │  3 rules: min CGPA, max backlogs, department      │
                     │  No database. Stateless.                          │
@@ -86,7 +86,7 @@ Maven wrapper (`mvnw`) that downloads Maven by itself, and the H2 database comes
 | Internet (first build only) | ✅ Required once | – | Downloads Maven and libraries (~150 MB) into `~/.m2` |
 | Spring Tool Suite 4 **or** IntelliJ IDEA | Recommended | latest | The spec asks for the demo to run in **STS** |
 | Postman | Recommended | latest | For API testing and report screenshots |
-| Free ports **8080** and **8081** | ✅ Required | – | See [Troubleshooting](#14-troubleshooting) |
+| Free ports **8080** and **8082** | ✅ Required | – | See [Troubleshooting](#14-troubleshooting) |
 
 ### Install a JDK
 
@@ -194,7 +194,7 @@ Each app is ready when its log shows `Started ...Application in X seconds`.
 
 | URL | Expected |
 | --- | --- |
-| http://localhost:8081/eligibility/ping | `{"status":"UP"}` |
+| http://localhost:8082/eligibility/ping | `{"status":"UP"}` |
 | http://localhost:8080 | The PlaceTrack login page |
 
 ### Build a runnable jar (optional)
@@ -365,18 +365,18 @@ To build and test everything the way a CI server would:
 2. In Postman: **Import** → choose both files in the [`postman/`](postman/) folder:
    `PlaceTrack.postman_collection.json` and `PlaceTrack.local.postman_environment.json`.
 3. Top right, select the environment **"PlaceTrack local"** (sets `{{baseUrl}}` = `http://localhost:8080` and
-   `{{eligUrl}}` = `http://localhost:8081`).
+   `{{eligUrl}}` = `http://localhost:8082`).
 4. Open a folder and **Send** each request, or right-click the collection → **Run** to run them all and see the
    green test results.
 
 | Folder | Requests | Notes |
 | --- | --- | --- |
-| 00 Eligibility service | 5 | Calls port 8081 directly |
+| 00 Eligibility service | 5 | Calls port 8082 directly |
 | 01 Drives and companies | 5 | Main app REST API |
 | 02 Applications | 7 | Needs **fresh seed data** (reset the data first), because it applies as student1 |
 | 03 Service down (run by hand) | 1 | Stop the eligibility service first; leave this folder out of a normal run |
 
-### Eligibility service API (port 8081)
+### Eligibility service API (port 8082)
 
 | Method + path | Body | Response |
 | --- | --- | --- |
@@ -426,7 +426,7 @@ placetrack2/
 │   ├── report/                   schema.sql, schema-and-sample-data.sql, later the report
 │   └── screenshots/              screenshots for the report
 ├── postman/                      Postman collection and environment
-├── eligibility-service/          microservice, port 8081
+├── eligibility-service/          microservice, port 8082
 │   ├── pom.xml, mvnw, mvnw.cmd
 │   └── src/main/java/com/placetrack/eligibility/
 │       ├── EligibilityServiceApplication.java   main
@@ -555,11 +555,11 @@ Main app: `placetrack-app/src/main/resources/application.properties`
 | `spring.h2.console.enabled` | `true` | Enables `/h2-console` |
 | `spring.jpa.hibernate.ddl-auto` | `update` | Hibernate creates or updates tables from the entities |
 | `spring.jpa.show-sql` | `true` | Prints every SQL statement (useful for learning) |
-| `eligibility.url` | `http://localhost:8081` | Where the eligibility service runs |
+| `eligibility.url` | `http://localhost:8082` | Where the eligibility service runs |
 | `server.servlet.session.tracking-modes` | `cookie` | Session id only in a cookie, never in URLs |
 | `server.error.include-message` | `always` | Lets the error page show messages like "Drive 99 not found" |
 
-Eligibility service: `eligibility-service/src/main/resources/application.properties` sets `server.port=8081`.
+Eligibility service: `eligibility-service/src/main/resources/application.properties` sets `server.port=8082`.
 
 Override any property when starting, without editing files:
 ```bash
@@ -572,11 +572,11 @@ Override any property when starting, without editing files:
 
 | Problem | Fix |
 | --- | --- |
-| `Port 8080 was already in use` (or 8081) | Another copy is still running. Stop it in the IDE, or find it: Linux/macOS `ss -ltnp \| grep 8080` (or `lsof -i :8080`) then `kill <pid>`; Windows `netstat -ano \| findstr :8080` then `taskkill /PID <pid> /F` |
+| `Port 8080 was already in use` (or 8082) | Another copy is still running. Stop it in the IDE, or find it: Linux/macOS `ss -ltnp \| grep 8080` (or `lsof -i :8080`) then `kill <pid>`; Windows `netstat -ano \| findstr :8080` then `taskkill /PID <pid> /F` |
 | `./mvnw: Permission denied` | `chmod +x mvnw` |
 | `JAVA_HOME is not set` / `java: command not found` | Install a JDK (section 3) and open a new terminal. Windows: set `JAVA_HOME` to the JDK folder in *Environment Variables* |
 | `release version 17 not supported` | Your JDK is older than 17. Install 17 or newer and select it in the IDE |
-| Every Apply / Check says "Eligibility check unavailable, try later" | The eligibility service is not running. Start it and check http://localhost:8081/eligibility/ping |
+| Every Apply / Check says "Eligibility check unavailable, try later" | The eligibility service is not running. Start it and check http://localhost:8082/eligibility/ping |
 | H2 console: "Database not found" | Wrong `data/` folder: see section 7 and use the full path |
 | H2 console: "Database may be already in use" | Another process holds the file (for example a second copy of the app). Stop it |
 | Login page keeps coming back | The session was lost: log in again. Restarting the app logs everyone out |

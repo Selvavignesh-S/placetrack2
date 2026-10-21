@@ -51,7 +51,7 @@ The special part: **eligibility is decided by a second, separate application** (
  Browser ──HTML──►┌──────────── placetrack-app (port 8080) ────────────┐
  Postman ──JSON──►│ Controllers → Services → Repositories → H2 database │
                   │                  │                                  │
-                  │          EligibilityClient ────────────────────────────► eligibility-service (port 8081)
+                  │          EligibilityClient ────────────────────────────► eligibility-service (port 8082)
                   └─────────────────────────────────────────────────────┘     3 rules, no database
 ```
 
@@ -97,7 +97,7 @@ placetrack2/
 ├── docs/                     PLAN.md, m1.md, m2.md, m3.md, team.md, this guide, report/ (schema SQL), screenshots/
 ├── postman/                  Postman collection + environment
 │
-├── eligibility-service/      SECOND APP, port 8081
+├── eligibility-service/      SECOND APP, port 8082
 │   ├── pom.xml               Maven: Spring web + validation + test
 │   └── src/main/java/com/placetrack/eligibility/
 │       ├── EligibilityServiceApplication   main(): starts the service
@@ -445,7 +445,7 @@ Five small classes in `eligibility-service`:
 
 | Class | Job |
 | --- | --- |
-| `EligibilityServiceApplication` | `main()`: starts it on port 8081 |
+| `EligibilityServiceApplication` | `main()`: starts it on port 8082 |
 | `EligibilityController` | `POST /eligibility/check` (with `@Valid`), `GET /eligibility/ping` |
 | `EligibilityService` | 3 rules: CGPA ≥ minimum, backlogs ≤ limit, department in list; one reason per failure |
 | `EligibilityRequest` | the JSON input (record with validation) |
